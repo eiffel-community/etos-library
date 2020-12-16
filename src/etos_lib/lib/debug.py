@@ -37,6 +37,11 @@ class Debug:
         return os.getenv("ETOS_SECRET_PATH", "/etc/")
 
     @property
+    def default_log_path(self):
+        """"Default log path."""
+        return os.getenv("ETOS_LOG_PATH", "/logs/log.json")
+
+    @property
     def disable_sending_events(self):
         """Disable sending eiffel events."""
         return bool(os.getenv("ETOS_DISABLE_SENDING_EVENTS", None))
