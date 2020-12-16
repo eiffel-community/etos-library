@@ -31,6 +31,7 @@ import logging
 import logging.config
 from etos_lib.logging.filter import EtosFilter
 from etos_lib.lib.debug import Debug
+from etos_lib.lib.config import Config
 
 DEFAULT_CONFIG = Path(__file__).parent.joinpath("default_config.conf")
 DEFAULT_LOG_PATH = Debug().default_log_path
@@ -52,10 +53,8 @@ def setup_logging(
     :param output: Output filename for logging to file.
     :type output: str
     """
+    Config().set("log_filter", EtosFilter(application, version, environment))
     logging.config.fileConfig(filename, defaults={"logfilename": output})
-    logging_filter = EtosFilter(application, version, environment)
-    logger = logging.getLogger()  # Set filter on root logger.
-    logger.addFilter(logging_filter)
 
 
 def get_logger(name, identifier):
@@ -68,4 +67,6 @@ def get_logger(name, identifier):
     :return: LoggerAdapter instance.
     :rtype: :obj:`logging.LoggerAdapter`
     """
-    return logging.LoggerAdapter(logging.getLogger(name), {"identifier": identifier})
+    logger = logging.getLogger(name)
+    logger.addFilter(Config().get("log_filter"))
+    return logging.LoggerAdapter(logger, {"identifier": identifier})
