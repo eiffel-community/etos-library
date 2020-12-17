@@ -18,6 +18,7 @@
 DEPRECATION WARNING: Some parameters which don't belong here will be removed.
 """
 import os
+from pathlib import Path
 from collections import deque
 
 
@@ -39,7 +40,12 @@ class Debug:
     @property
     def default_log_path(self):
         """"Default log path."""
-        return os.getenv("ETOS_LOG_PATH", "/logs/log.json")
+        path = os.getenv("ETOS_LOG_PATH")
+        if path is None:
+            path = Path.home().joinpath("logs/log.json")
+        else:
+            path = Path(path)
+        return path
 
     @property
     def disable_sending_events(self):

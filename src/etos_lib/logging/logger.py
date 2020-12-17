@@ -35,6 +35,7 @@ from etos_lib.lib.config import Config
 
 DEFAULT_CONFIG = Path(__file__).parent.joinpath("default_config.conf")
 DEFAULT_LOG_PATH = Debug().default_log_path
+DEFAULT_LOG_PATH.parent.mkdir(exist_ok=True, parents=True)
 
 
 def setup_logging(
