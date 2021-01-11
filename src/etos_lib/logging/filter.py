@@ -20,7 +20,7 @@ import logging
 class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
     """Filter for adding extra application specific data to log messages."""
 
-    def __init__(self, application, version, environment):
+    def __init__(self, application, version, environment, local):
         """Initialize with a few ETOS application fields.
 
         :param application: Name of application.
@@ -29,10 +29,13 @@ class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
         :type version: str
         :param environment: In which environment is this executing.
         :type environment: str
+        :param local: Thread-local configuration information.
+        :type local: :obj:`threading.local`
         """
         self.application = application
         self.version = version
         self.environment = environment
+        self.local = local
         super().__init__()
 
     def filter(self, record):
@@ -43,9 +46,16 @@ class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
         :return: True
         :rtype: bool
         """
-        if not hasattr(record, "identifier"):
-            record.identifier = "Unknown"
         record.application = self.application
         record.version = self.version
         record.environment = self.environment
+
+        # Add each thread-local attribute to record.
+        for attr in dir(self.local):
+            if attr.startswith("__") and attr.endswith("__"):
+                continue
+            setattr(record, attr, getattr(self.local, attr))
+        if not hasattr(record, "identifier"):
+            record.identifier = "Unknown"
+
         return True

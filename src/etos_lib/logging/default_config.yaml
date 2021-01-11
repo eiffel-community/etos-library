@@ -1,0 +1,5 @@
+logging:
+  stream:
+    loglevel: INFO
+  file:
+    loglevel: DEBUG
