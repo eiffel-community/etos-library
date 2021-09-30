@@ -49,9 +49,12 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
     __secrets = None
     __database = None
 
-    def __init__(self, service_name, host, name):
+    def __init__(self, service_name, host, name, domain_id=None):
         """Initialize source and service name."""
-        self.config.set("source", {"name": name, "host": host})
+        source = {"name": name, "host": host}
+        if domain_id is not None:
+            source["domainId"] = domain_id
+        self.config.set("source", source)
         self.config.set("service_name", service_name)
 
     def __del__(self):
@@ -64,7 +67,7 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         rabbitmq = self.config.get("rabbitmq_publisher")
         if not rabbitmq:
             raise PublisherConfigurationMissing
-        self.publisher = RabbitMQPublisher(**rabbitmq)
+        self.publisher = RabbitMQPublisher(routing_key=None, **rabbitmq)
         if not self.debug.disable_sending_events:
             self.publisher.start()
         self.config.set("publisher", self.publisher)

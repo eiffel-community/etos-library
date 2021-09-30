@@ -5,6 +5,6 @@ graphql-core==2.2.1
 gql==0.1.0
 cryptography==3.1
 redis==3.5.3
-eiffellib==1.2.0
+eiffellib[rabbitmq]==2.2.0
 pydantic==1.6
 python-box==5.2.0
