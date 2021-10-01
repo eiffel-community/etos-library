@@ -96,7 +96,10 @@ class Config:
         """Load RabbitMQ subscriber data from environment variables and set in config."""
         if not self.get("rabbitmq"):
             self.rabbitmq_from_environment()
-        data = {"queue": os.getenv("RABBITMQ_QUEUE", None), "routing_key": "#"}
+        data = {
+            "queue": os.getenv("RABBITMQ_QUEUE", None),
+            "routing_key": os.getenv("RABBITMQ_ROUTING_KEY", "#")
+        }
         data.update(**self.get("rabbitmq").copy())
         self.set("rabbitmq_subscriber", data)
 
