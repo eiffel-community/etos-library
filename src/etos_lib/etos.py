@@ -23,6 +23,7 @@ from .lib.monitor import Monitor
 from .lib.utils import Utils
 from .lib.http import Http
 from .lib.debug import Debug
+from .lib.feature_flags import FeatureFlags
 from .lib.database import Database
 from .lib.secrets import Secrets
 from .lib.exceptions import (
@@ -46,6 +47,7 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
     __graphql = None
     __http = None
     __debug = None
+    __feature_flags = None
     __secrets = None
     __database = None
 
@@ -88,6 +90,13 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         if self.__debug is None:
             self.__debug = Debug()
         return self.__debug
+
+    @property
+    def feature_flags(self):
+        """Entry for feature flags for ETOS."""
+        if self.__feature_flags is None:
+            self.__feature_flags = FeatureFlags()
+        return self.__feature_flags
 
     @property
     def monitor(self):
