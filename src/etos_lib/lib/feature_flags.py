@@ -20,6 +20,6 @@ class FeatureFlags:
     """Feature flags for ETOS."""
 
     @property
-    def disable_clm(self):
-        """Whether or not CLM sending shall be disabled."""
-        return os.getenv("ETOS_FEATURE_DISABLE_CLM", "false") == "true"
+    def clm(self):
+        """Whether or not CLM sending shall be enabled."""
+        return os.getenv("ETOS_FEATURE_CLM", "true") == "true"
