@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -98,7 +98,7 @@ class Config:
             self.rabbitmq_from_environment()
         data = {
             "queue": os.getenv("RABBITMQ_QUEUE", None),
-            "routing_key": os.getenv("RABBITMQ_ROUTING_KEY", "#")
+            "routing_key": os.getenv("RABBITMQ_ROUTING_KEY", "#"),
         }
         data.update(**self.get("rabbitmq").copy())
         self.set("rabbitmq_subscriber", data)

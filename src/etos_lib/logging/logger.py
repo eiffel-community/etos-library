@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -105,8 +105,7 @@ def setup_stream_logging(config, log_filter):
     loglevel = getattr(logging, config.get("loglevel", "INFO"))
 
     logformat = config.get(
-        "logformat",
-        "[%(asctime)s][%(identifier)s] %(levelname)s:%(name)s: %(message)s"
+        "logformat", "[%(asctime)s][%(identifier)s] %(levelname)s:%(name)s: %(message)s"
     )
     dateformat = config.get("dateformat", "%Y-%m-%d %H:%M:%S")
     root_logger = logging.getLogger()
@@ -117,9 +116,7 @@ def setup_stream_logging(config, log_filter):
     root_logger.addHandler(stream_handler)
 
 
-def setup_logging(
-    application, version, environment, config_file=DEFAULT_CONFIG
-):
+def setup_logging(application, version, environment, config_file=DEFAULT_CONFIG):
     """Set up basic logging.
 
     :param application: Name of application to setup logging for.
@@ -131,7 +128,7 @@ def setup_logging(
     :param config_file: Filename of logging configuration.
     :type config_file: str
     """
-    with open(config_file) as yaml_file:
+    with open(config_file, encoding="utf-8") as yaml_file:
         config = Box.from_yaml(yaml_file)
     logging_config = config.logging
 

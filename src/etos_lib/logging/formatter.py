@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -60,6 +60,7 @@ class EtosLogFormatter(logging.Formatter):
 
     def format(self, record):
         """Serialize LogRecord data as JSON.
+
         Overrides the inherited behavior by ignoring any configured
         format string and storing attributes of the passed LogRecord
         object in a dictionary and serializing it to JSON. See class
@@ -75,7 +76,7 @@ class EtosLogFormatter(logging.Formatter):
         exc_type, exc_message, stack = sys.exc_info()
         if exc_type and exc_message and stack:
             fields["exception"] = {
-                "type": "{}.{}".format(exc_type.__module__, exc_type.__name__),
+                "type": f"{exc_type.__module__}.{exc_type.__name__}",
                 "message": str(exc_message),
                 # format_tb() returns a list of newline-terminated strings.
                 # Don't include the final newline.
@@ -85,7 +86,8 @@ class EtosLogFormatter(logging.Formatter):
         return json.dumps(fields)
 
     def formatTime(self, record, datefmt=None):
-        """Formats the log record's timestamp in ISO8601 format, in UTC.
+        """Format the log record's timestamp in ISO8601 format, in UTC.
+
         Overrides the inherited behavior by always returning ISO8601
         strings without allowing custom date formats.
         Raises:

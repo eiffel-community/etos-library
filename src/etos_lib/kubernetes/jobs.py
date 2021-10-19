@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -49,7 +49,7 @@ class Job(Kubernetes):
             )
             status = response.status
             if status.active is not None:
-                print("Started at: {}".format(str(status.start_time)))
+                print(f"Started at: {status.start_time}")
                 break
             time.sleep(1)
         return response
@@ -74,7 +74,7 @@ class Job(Kubernetes):
             status = response.status
             # pylint:disable=no-else-break
             if status.failed is not None:
-                print("Finished, but failed: {}".format(status))
+                print(f"Finished, but failed: {status}")
                 result = False
                 break
             elif status.succeeded is not None:

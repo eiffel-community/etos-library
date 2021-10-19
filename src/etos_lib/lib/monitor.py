@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -87,18 +87,15 @@ class Monitor:
             raise PublisherNotStarted
 
         events = Events(publisher)
-        heading = "{} is up and running.".format(self.config.get("service_name"))
-        self.announcement = events.send_announcement_published(heading, body, "MINOR")
+        self.announcement = events.send_announcement_published(
+            f"{self.config.get('service_name')} is up and running.", body, "MINOR"
+        )
         try:
             yield
         except Exception as exception:  # pylint:disable=broad-except
-            heading = "{} stopped running unexpectedly.".format(
-                self.config.get("service_name")
-            )
-            body = ("{}\n").format(str(exception))
             events.send_announcement_published(
-                heading,
-                body,
+                f"{self.config.get('service_name')} stopped running unexpectedly.",
+                f"{exception}\n",
                 "CRITICAL",
                 links={"modified_announcement": self.announcement},
             )
@@ -115,14 +112,13 @@ class Monitor:
             if publisher is None:
                 raise PublisherNotStarted
 
-            heading = "{} was shut down.".format(self.config.get("service_name"))
-            body = ("{} has stopped sending and listening to Eiffel events.").format(
-                self.config.get("service_name")
-            )
             events = Events(publisher)
             events.send_announcement_published(
-                heading,
-                body,
+                f"{self.config.get('service_name')} was shut down.",
+                (
+                    f"{self.config.get('service_name')} has stopped sending and"
+                    "listening to Eiffel events."
+                ),
                 "CLOSED",
                 links={"modified_announcement": self.announcement},
             )

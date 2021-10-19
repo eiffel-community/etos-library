@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -75,7 +75,7 @@ class Kubernetes:
         :return: New, unique, name.
         :rtype: str
         """
-        return "{}-{}".format(name, uuid4().hex[:10].upper())
+        return f"{name}-{uuid4().hex[:10].upper()}"
 
     @property
     def apps_v1(self):

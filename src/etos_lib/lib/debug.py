@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -39,7 +39,7 @@ class Debug:
 
     @property
     def default_log_path(self):
-        """"Default log path."""
+        """Log path."""
         path = os.getenv("ETOS_LOG_PATH")
         if path is None:
             path = Path.home().joinpath("logs/log.json")

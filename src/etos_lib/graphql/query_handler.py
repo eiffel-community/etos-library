@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -24,7 +24,6 @@ class GraphQLQueryHandler:
     """Create and send GraphQL queries."""
 
     __client = None
-    __query = None
 
     def __init__(self):
         """Graphql query handler."""

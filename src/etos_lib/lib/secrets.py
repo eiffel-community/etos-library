@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -73,5 +73,5 @@ class Secrets:
         if os.path.isfile(path):
             if self.config.get(service) is None:
                 self.config.set(service, {})
-            with open(path) as secret:
+            with open(path, encoding="utf-8") as secret:
                 self.config.get(service)[filename] = secret.read()

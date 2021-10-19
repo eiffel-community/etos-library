@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -269,7 +269,7 @@ class Utils:
         self.logger.debug("Running command: %s", " ".join(cmd))
         if shell:
             cmd = " ".join(cmd)
-        proc = subprocess.Popen(
+        proc = subprocess.Popen(  # pylint:disable=consider-using-with
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -282,7 +282,8 @@ class Utils:
         output_file = None
         try:
             if output:
-                output_file = open(output, "w")
+                # pylint:disable=consider-using-with
+                output_file = open(output, "w", encoding="utf-8")
             # Make sure you can read all output with 'docker logs'
             for line in iter(proc.stdout.readline, b""):
                 yield proc, line.decode("utf-8").strip()

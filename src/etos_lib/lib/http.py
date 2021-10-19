@@ -1,4 +1,4 @@
-# Copyright 2020 Axis Communications AB.
+# Copyright 2020-2021 Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -100,7 +100,7 @@ class Http:
                 time.sleep(2)
         else:
             raise ConnectionError(
-                "Unable to {} {} with params {}".format(verb, url, requests_kwargs)
+                f"Unable to {verb} {url} with params {requests_kwargs}"
             )
 
     def wait_for_request(self, uri, timeout=None, as_json=True, **params):

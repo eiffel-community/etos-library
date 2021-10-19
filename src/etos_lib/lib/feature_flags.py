@@ -16,6 +16,8 @@
 """ETOS feature flags."""
 import os
 
+
+# This is a good thing! pylint:disable=too-few-public-methods
 class FeatureFlags:
     """Feature flags for ETOS."""
 
