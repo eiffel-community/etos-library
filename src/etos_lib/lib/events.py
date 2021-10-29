@@ -67,6 +67,7 @@ class Events:
             event.data.add(key, value)
         event.validate()
         self.debug.events_published.append(event)
+        event.tag = self.debug.routing_key_tag
         if not self.debug.disable_sending_events:
             self.publisher.send_event(event)
         return event

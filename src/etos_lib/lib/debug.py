@@ -48,6 +48,11 @@ class Debug:
         return path
 
     @property
+    def routing_key_tag(self):
+        """Tag to use for routing key on events sent by ETOS library."""
+        return os.getenv("ETOS_ROUTING_KEY_TAG", "_")
+
+    @property
     def disable_sending_events(self):
         """Disable sending eiffel events."""
         return bool(os.getenv("ETOS_DISABLE_SENDING_EVENTS", None))
