@@ -14,14 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS feature flags."""
-import os
-
 
 # This is a good thing! pylint:disable=too-few-public-methods
 class FeatureFlags:
     """Feature flags for ETOS."""
-
-    @property
-    def clm(self):
-        """Whether or not CLM sending shall be enabled."""
-        return os.getenv("ETOS_FEATURE_CLM", "true") == "true"
