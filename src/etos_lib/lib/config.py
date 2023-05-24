@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library config."""
+import json
 from pprint import pprint
 import os
 
@@ -96,9 +97,13 @@ class Config:
         """Load RabbitMQ subscriber data from environment variables and set in config."""
         if not self.get("rabbitmq"):
             self.rabbitmq_from_environment()
+        queue_params = os.getenv("RABBITMQ_QUEUE_PARAMS")
+        if queue_params is not None:
+            queue_params = json.loads(queue_params)
         data = {
             "queue": os.getenv("RABBITMQ_QUEUE", None),
             "routing_key": os.getenv("RABBITMQ_ROUTING_KEY", "#"),
+            "queue_params": queue_params,
         }
         data.update(**self.get("rabbitmq").copy())
         self.set("rabbitmq_subscriber", data)
