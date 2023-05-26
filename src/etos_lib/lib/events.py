@@ -162,7 +162,9 @@ class Events:
             and optional.get("host") is None
             and optional.get("uri") is None
         ):
-            raise ValueError("At least one of 'host', 'image' or 'uri' must be provided")
+            raise ValueError(
+                "At least one of 'host', 'image' or 'uri' must be provided"
+            )
         links = links if links is not None else {}
         data = {"name": name}
         data.update(**optional)
