@@ -54,7 +54,7 @@ class Job(Kubernetes):
             time.sleep(1)
         return response
 
-    def wait_for_job_finished(self, job_name, timeout=(3600 * 10)):
+    def wait_for_job_finished(self, job_name, timeout=3600 * 10):
         """Wait for a kubernetes job status to become 'failed' or 'succeeded'.
 
         :param job_name: Name of job to wait for.

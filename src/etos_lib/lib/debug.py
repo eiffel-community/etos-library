@@ -112,21 +112,21 @@ class Debug:
         """Environment provider host to use."""
         if os.getenv("ETOS_ENVIRONMENT_PROVIDER") is not None:
             return os.getenv("ETOS_ENVIRONMENT_PROVIDER")
-        raise Exception("ETOS_ENVIRONMENT_PROVIDER environment variable not set!")
+        raise ValueError("ETOS_ENVIRONMENT_PROVIDER environment variable not set!")
 
     @property
     def etos_api(self):
         """ETOS API host to use."""
         if os.getenv("ETOS_API") is not None:
             return os.getenv("ETOS_API")
-        raise Exception("ETOS_API environment variable not set!")
+        raise ValueError("ETOS_API environment variable not set!")
 
     @property
     def graphql_server(self):
         """Graphql server to use."""
         if os.getenv("ETOS_GRAPHQL_SERVER") is not None:
             return os.getenv("ETOS_GRAPHQL_SERVER")
-        raise Exception("ETOS_GRAPHQL_SERVER environment variable not set!")
+        raise ValueError("ETOS_GRAPHQL_SERVER environment variable not set!")
 
     @property
     def database_host(self):

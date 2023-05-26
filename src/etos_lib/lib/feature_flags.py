@@ -15,6 +15,7 @@
 # limitations under the License.
 """ETOS feature flags."""
 
+
 # This is a good thing! pylint:disable=too-few-public-methods
 class FeatureFlags:
     """Feature flags for ETOS."""
