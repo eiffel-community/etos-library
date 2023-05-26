@@ -1,4 +1,4 @@
-# Copyright 2020-2021 Axis Communications AB.
+# Copyright Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -78,6 +78,19 @@ class Config:
     def rabbitmq_subscriber(self):
         """Rabbitmq Subscriber data."""
         return self.config.get("rabbitmq_subscriber")
+
+    def etos_rabbitmq_publisher_data(self):
+        """Get RabbitMQ parameters for the ETOS rabbitmq service."""
+        ssl = os.getenv("ETOS_RABBITMQ_SSL", "true") == "true"
+        return {
+            "host": os.getenv("ETOS_RABBITMQ_HOST", "127.0.0.1"),
+            "exchange": os.getenv("ETOS_RABBITMQ_EXCHANGE", "etos"),
+            "username": os.getenv("ETOS_RABBITMQ_USERNAME", None),
+            "password": os.getenv("ETOS_RABBITMQ_PASSWORD", None),
+            "port": int(os.getenv("ETOS_RABBITMQ_PORT", "5672")),
+            "vhost": os.getenv("ETOS_RABBITMQ_VHOST", None),
+            "ssl": ssl,
+        }
 
     def rabbitmq_from_environment(self):
         """Load RabbitMQ data from environment variables."""

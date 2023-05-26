@@ -1,4 +1,4 @@
-# Copyright 2020-2021 Axis Communications AB.
+# Copyright Axis Communications AB.
 #
 # For a full list of individual contributors, please see the commit history.
 #
@@ -29,6 +29,7 @@ Example::
 
 """
 import sys
+import atexit
 from pathlib import Path
 import threading
 import logging
@@ -36,6 +37,9 @@ import logging.config
 from box import Box
 from etos_lib.logging.filter import EtosFilter
 from etos_lib.logging.formatter import EtosLogFormatter
+from etos_lib.logging.rabbitmq_handler import RabbitMQHandler
+from etos_lib.logging.log_publisher import RabbitMQLogPublisher
+from etos_lib.lib.config import Config
 from etos_lib.lib.debug import Debug
 
 DEFAULT_CONFIG = Path(__file__).parent.joinpath("default_config.yaml")
@@ -116,6 +120,37 @@ def setup_stream_logging(config, log_filter):
     root_logger.addHandler(stream_handler)
 
 
+def setup_rabbitmq_logging(log_filter):
+    """Set up rabbitmq logging.
+
+    :param log_filter: Logfilter to add to stream handler.
+    :type log_filter: :obj:`EtosFilter`
+    """
+    loglevel = logging.DEBUG
+
+    root_logger = logging.getLogger()
+
+    # These have to be removed as they create a loop.
+    # They will still work with the other handlers.
+    logging.getLogger("pika").propagate = False
+    logging.getLogger("rabbitmq_publisher").propagate = False
+    logging.getLogger("base_rabbitmq").propagate = False
+
+    rabbitmq = RabbitMQLogPublisher(
+        **Config().etos_rabbitmq_publisher_data(), routing_key=None
+    )
+    if not Debug().disable_sending_events:
+        rabbitmq.start()
+    atexit.register(close_rabbit, rabbitmq)
+
+    rabbit_handler = RabbitMQHandler(rabbitmq)
+    rabbit_handler.setFormatter(EtosLogFormatter())
+    rabbit_handler.setLevel(loglevel)
+    rabbit_handler.addFilter(log_filter)
+
+    root_logger.addHandler(rabbit_handler)
+
+
 def setup_logging(application, version, environment, config_file=DEFAULT_CONFIG):
     """Set up basic logging.
 
@@ -147,3 +182,10 @@ def setup_logging(application, version, environment, config_file=DEFAULT_CONFIG)
         setup_stream_logging(logging_config.get("stream"), log_filter)
     if logging_config.get("file"):
         setup_file_logging(logging_config.get("file"), log_filter)
+    setup_rabbitmq_logging(log_filter)
+
+
+def close_rabbit(rabbit):
+    """Close down a rabbitmq connection."""
+    rabbit.wait_for_unpublished_events()
+    rabbit.close()
