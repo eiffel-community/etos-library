@@ -61,8 +61,8 @@ class RabbitMQHandler(logging.StreamHandler):
             identifier = json.loads(msg).get("identifier", "Unknown")
         # An unknown identifier will never be picked up by user log handler
         # so it is unnecessary to send it.
-        if identifier == "Unknown":
-            raise ValueError("Trying to send a user log when identifier is not set")
         routing_key = f"{identifier}.log.{record.levelname}"
         if send and self.rabbitmq.is_alive():
+            if identifier == "Unknown":
+                raise ValueError("Trying to send a user log when identifier is not set")
             self.rabbitmq.send_event(msg, routing_key=routing_key)
