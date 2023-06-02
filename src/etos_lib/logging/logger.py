@@ -34,7 +34,7 @@ from pathlib import Path
 import threading
 import logging
 import logging.config
-from box import Box
+from yaml import load, SafeLoader
 from etos_lib.logging.filter import EtosFilter
 from etos_lib.logging.formatter import EtosLogFormatter
 from etos_lib.logging.rabbitmq_handler import RabbitMQHandler
@@ -65,7 +65,7 @@ def setup_file_logging(config, log_filter):
             max_bytes: 100
 
     :param config: File logging configuration.
-    :type config: :obj:`Box`
+    :type config: dict
     :param log_filter: Logfilter to add to file handler.
     :type log_filter: :obj:`EtosFilter`
     """
@@ -102,7 +102,7 @@ def setup_stream_logging(config, log_filter):
             dateformat: %Y-%d-%m %H:%M:%S
 
     :param config: Stream logging configuration.
-    :type config: :obj:`Box`
+    :type config: dict
     :param log_filter: Logfilter to add to stream handler.
     :type log_filter: :obj:`EtosFilter`
     """
@@ -164,8 +164,8 @@ def setup_logging(application, version, environment, config_file=DEFAULT_CONFIG)
     :type config_file: str
     """
     with open(config_file, encoding="utf-8") as yaml_file:
-        config = Box.from_yaml(yaml_file)
-    logging_config = config.logging
+        config = load(yaml_file, Loader=SafeLoader)
+    logging_config = config["logging"]
 
     log_filter = EtosFilter(application, version, environment, FORMAT_CONFIG)
 

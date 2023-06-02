@@ -33,11 +33,6 @@ class Debug:
     )
 
     @property
-    def default_secret_path(self):
-        """Path to k8s secrets."""
-        return os.getenv("ETOS_SECRET_PATH", "/etc/")
-
-    @property
     def default_log_path(self):
         """Log path."""
         path = os.getenv("ETOS_LOG_PATH")

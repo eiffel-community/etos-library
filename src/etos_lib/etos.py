@@ -16,7 +16,6 @@
 """ETOS Library module."""
 from eiffellib.subscribers import RabbitMQSubscriber
 from eiffellib.publishers import RabbitMQPublisher
-from .lib.auth import Auth
 from .lib.config import Config
 from .lib.events import Events
 from .lib.monitor import Monitor
@@ -25,7 +24,6 @@ from .lib.http import Http
 from .lib.debug import Debug
 from .lib.feature_flags import FeatureFlags
 from .lib.database import Database
-from .lib.secrets import Secrets
 from .lib.exceptions import (
     PublisherConfigurationMissing,
     SubscriberConfigurationMissing,
@@ -39,7 +37,6 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
 
     publisher = None
     subscriber = None
-    __auth = None
     __config = None
     __events = None
     __monitor = None
@@ -48,7 +45,6 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
     __http = None
     __debug = None
     __feature_flags = None
-    __secrets = None
     __database = None
 
     def __init__(self, service_name, host, name, domain_id=None):
@@ -115,13 +111,6 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         return self.__events
 
     @property
-    def auth(self):
-        """Entry for ETOS Library auth service."""
-        if self.__auth is None:
-            self.__auth = Auth()
-        return self.__auth
-
-    @property
     def config(self):
         """Entry for ETOS Library config service."""
         if self.__config is None:
@@ -155,10 +144,3 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         if self.__database is None:
             self.__database = Database()
         return self.__database
-
-    @property
-    def secrets(self):
-        """Entry to ETOS Library secret service."""
-        if self.__secrets is None:
-            self.__secrets = Secrets()
-        return self.__secrets

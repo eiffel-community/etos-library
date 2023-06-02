@@ -1,10 +1,7 @@
-# Add your requirements here like:
-# numpy
-# scipy>=0.9
-graphql-core==2.2.1
-gql==0.1.0
-cryptography==3.1
-redis==3.5.3
-eiffellib[rabbitmq]==2.4.1
-pydantic==1.6
-python-box==5.2.0
+# ~= 3.4 Means >=3.4, == 3.*
+gql~=3.4
+redis~=4.5
+eiffellib[rabbitmq]~=2.4
+requests~=2.31
+kubernetes~=26.1
+pyyaml~=6.0
