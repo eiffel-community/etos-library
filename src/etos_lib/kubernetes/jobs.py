@@ -90,4 +90,4 @@ class Job(Kubernetes):
         :param job_name: Name of job to remove.
         :type job_name: str
         """
-        self.batch_v1.delete_namespaced_job(job_name, self.namespace, {})
+        self.batch_v1.delete_namespaced_job(job_name, self.namespace)

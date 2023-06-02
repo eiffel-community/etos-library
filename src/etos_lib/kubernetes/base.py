@@ -26,7 +26,6 @@ class Kubernetes:
     __batch = None
     __core = None
     __apps = None
-    __extensions = None
 
     def __init__(
         self, namespace=os.getenv("ETOS_NAMESPACE"), context=None, in_cluster=True
@@ -90,13 +89,6 @@ class Kubernetes:
         if self.__batch is None:
             self.__batch = client.BatchV1Api()
         return self.__batch
-
-    @property
-    def extensions(self):
-        """Create a ExtensionsV1beta1Api endpoint."""
-        if self.__extensions is None:
-            self.__extensions = client.ExtensionsV1beta1Api()
-        return self.__extensions
 
     @property
     def core(self):

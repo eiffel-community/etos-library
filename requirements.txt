@@ -1,5 +1,5 @@
 # ~= 3.4 Means >=3.4, == 3.*
-gql~=3.4
+gql[requests]~=3.4
 redis~=4.5
 eiffellib[rabbitmq]~=2.4
 requests~=2.31
