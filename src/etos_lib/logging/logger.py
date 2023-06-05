@@ -139,7 +139,7 @@ def setup_rabbitmq_logging(log_filter):
     rabbitmq = RabbitMQLogPublisher(
         **Config().etos_rabbitmq_publisher_data(), routing_key=None
     )
-    if not Debug().disable_sending_logs:
+    if Debug().enable_sending_logs:
         rabbitmq.start()
         atexit.register(close_rabbit, rabbitmq)
 
