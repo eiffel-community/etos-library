@@ -54,8 +54,8 @@ class Debug:
 
     @property
     def enable_sending_logs(self):
-        """Disable sending eiffel events."""
-        return bool(os.getenv("ETOS_ENABLE_SENDING_LOGS", None))
+        """Enable sending ETOS log events."""
+        return os.getenv("ETOS_ENABLE_SENDING_LOGS", "true").lower() == "true"
 
     @property
     def disable_receiving_events(self):
