@@ -39,9 +39,7 @@ class GraphQLQueryHandler:
     @property
     def client(self):
         """Graphql client."""
-        if self.__client is None:
-            self.__client = Client(transport=self.transport)
-        return self.__client
+        return Client(transport=self.transport)
 
     @staticmethod
     def query(query):
