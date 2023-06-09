@@ -23,8 +23,6 @@ from etos_lib.lib.debug import Debug
 class GraphQLQueryHandler:
     """Create and send GraphQL queries."""
 
-    __client = None
-
     def __init__(self):
         """Graphql query handler."""
         self.transport_protocol = RequestsHTTPTransport
