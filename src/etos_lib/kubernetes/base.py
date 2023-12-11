@@ -27,9 +27,7 @@ class Kubernetes:
     __core = None
     __apps = None
 
-    def __init__(
-        self, namespace=os.getenv("ETOS_NAMESPACE"), context=None, in_cluster=True
-    ):
+    def __init__(self, namespace=os.getenv("ETOS_NAMESPACE"), context=None, in_cluster=True):
         """Initialize kubernetes library and load kubernetes configuration.
 
         :param namespace: Which namespace to operate in.

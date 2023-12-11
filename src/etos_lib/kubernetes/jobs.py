@@ -44,9 +44,7 @@ class Job(Kubernetes):
         """
         timeout = time.time() + timeout
         while time.time() < timeout:
-            response = self.batch_v1.read_namespaced_job_status(
-                job_name, self.namespace
-            )
+            response = self.batch_v1.read_namespaced_job_status(job_name, self.namespace)
             status = response.status
             if status.active is not None:
                 print(f"Started at: {status.start_time}")
@@ -68,9 +66,7 @@ class Job(Kubernetes):
         timeout = time.time() + timeout
         result = False
         while time.time() < timeout:
-            response = self.batch_v1.read_namespaced_job_status(
-                job_name, self.namespace
-            )
+            response = self.batch_v1.read_namespaced_job_status(job_name, self.namespace)
             status = response.status
             # pylint:disable=no-else-break
             if status.failed is not None:
