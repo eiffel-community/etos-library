@@ -33,9 +33,7 @@ class RabbitMQLogPublisher(RabbitMQPublisher):
             self.wait_start()
             while self._channel is None or not self._channel.is_open:
                 time.sleep(0.1)
-        properties = pika.BasicProperties(
-            content_type="application/json", delivery_mode=2
-        )
+        properties = pika.BasicProperties(content_type="application/json", delivery_mode=2)
         if not isinstance(event, str):
             event = json.dumps(event)
 
