@@ -5,3 +5,5 @@ eiffellib[rabbitmq]~=2.4
 requests~=2.31
 kubernetes~=26.1
 pyyaml~=6.0
+opentelemetry-api~=1.21
+opentelemetry-semantic-conventions~=0.42b0

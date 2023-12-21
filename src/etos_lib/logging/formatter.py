@@ -98,6 +98,4 @@ class EtosLogFormatter(logging.Formatter):
         # Make Logstash's @timestamp parser happy by including a "T"
         # between the date and the time. Append 'Z' to make it clear
         # that the timestamp is UTC.
-        return datetime.datetime.utcfromtimestamp(record.created).strftime(
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
+        return datetime.datetime.utcfromtimestamp(record.created).strftime("%Y-%m-%dT%H:%M:%S.%fZ")

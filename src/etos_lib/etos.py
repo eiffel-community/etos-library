@@ -14,22 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library module."""
-from eiffellib.subscribers import RabbitMQSubscriber
-from eiffellib.publishers import RabbitMQPublisher
+from .eiffel.publisher import TracingRabbitMQPublisher as RabbitMQPublisher
+from .eiffel.subscriber import TracingRabbitMQSubscriber as RabbitMQSubscriber
+from .graphql.query_handler import GraphQLQueryHandler
 from .lib.config import Config
-from .lib.events import Events
-from .lib.monitor import Monitor
-from .lib.utils import Utils
-from .lib.http import Http
-from .lib.debug import Debug
-from .lib.feature_flags import FeatureFlags
 from .lib.database import Database
+from .lib.debug import Debug
+from .lib.events import Events
 from .lib.exceptions import (
     PublisherConfigurationMissing,
-    SubscriberConfigurationMissing,
     PublisherNotStarted,
+    SubscriberConfigurationMissing,
 )
-from .graphql.query_handler import GraphQLQueryHandler
+from .lib.feature_flags import FeatureFlags
+from .lib.http import Http
+from .lib.monitor import Monitor
+from .lib.utils import Utils
 
 
 class ETOS:  # pylint: disable=too-many-instance-attributes

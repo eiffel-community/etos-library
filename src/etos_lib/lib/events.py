@@ -162,9 +162,7 @@ class Events:
             and optional.get("host") is None
             and optional.get("uri") is None
         ):
-            raise ValueError(
-                "At least one of 'host', 'image' or 'uri' must be provided"
-            )
+            raise ValueError("At least one of 'host', 'image' or 'uri' must be provided")
         links = links if links is not None else {}
         data = {"name": name}
         data.update(**optional)
@@ -204,9 +202,7 @@ class Events:
         data = optional
         return self.send(EiffelTestSuiteFinishedEvent(), links, data)
 
-    def send_announcement_published(
-        self, heading, body, severity, links=None, **optional
-    ):
+    def send_announcement_published(self, heading, body, severity, links=None, **optional):
         """Publish an announcement event.
 
         https://github.com/eiffel-community/eiffel/blob/master/eiffel-vocabulary/EiffelAnnouncementPublishedEvent.md
@@ -242,9 +238,7 @@ class Events:
         :type optional: dict
         """
         if optional.get("batches") is None and optional.get("batchesUri") is None:
-            raise ValueError(
-                "At least one of 'batches' or 'batchesUri' must be provided"
-            )
+            raise ValueError("At least one of 'batches' or 'batchesUri' must be provided")
         links = links if links is not None else {}
         data = {"selectionStrategy": selection_strategy}
         data.update(**optional)
@@ -343,9 +337,7 @@ class Events:
         data.update(**optional)
         return self.send(EiffelArtifactCreatedEvent(), links, data)
 
-    def send_artifact_published_event(
-        self, locations, artifact, links=None, **optional
-    ):
+    def send_artifact_published_event(self, locations, artifact, links=None, **optional):
         """Publish an artifact created event.
 
         https://github.com/eiffel-community/eiffel/blob/master/eiffel-vocabulary/EiffelArtifactPublishedEvent.md

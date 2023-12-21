@@ -25,12 +25,8 @@ from collections import deque
 class Debug:
     """Debug flags for ETOS."""
 
-    __events_published = deque(
-        maxlen=int(os.getenv("ETOS_PUBLISHED_EVENT_HISTORY_SIZE", "100"))
-    )
-    __events_received = deque(
-        maxlen=int(os.getenv("ETOS_RECEIVED_EVENT_HISTORY_SIZE", "100"))
-    )
+    __events_published = deque(maxlen=int(os.getenv("ETOS_PUBLISHED_EVENT_HISTORY_SIZE", "100")))
+    __events_received = deque(maxlen=int(os.getenv("ETOS_RECEIVED_EVENT_HISTORY_SIZE", "100")))
 
     @property
     def default_log_path(self):

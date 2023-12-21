@@ -136,9 +136,7 @@ def setup_rabbitmq_logging(log_filter):
     logging.getLogger("eiffellib.publishers.rabbitmq_publisher").propagate = False
     logging.getLogger("base_rabbitmq").propagate = False
 
-    rabbitmq = RabbitMQLogPublisher(
-        **Config().etos_rabbitmq_publisher_data(), routing_key=None
-    )
+    rabbitmq = RabbitMQLogPublisher(**Config().etos_rabbitmq_publisher_data(), routing_key=None)
     if Debug().enable_sending_logs:
         rabbitmq.start()
         atexit.register(close_rabbit, rabbitmq)

@@ -234,9 +234,7 @@ class Utils:
         :rtype: tuple
         """
         out = []
-        for _, line in self.iterable_call(
-            cmd, shell, env, executable, output, wait_output
-        ):
+        for _, line in self.iterable_call(cmd, shell, env, executable, output, wait_output):
             if isinstance(line, str):
                 out.append(line)
             else:
