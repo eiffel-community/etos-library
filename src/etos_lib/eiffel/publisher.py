@@ -106,6 +106,7 @@ class TracingRabbitMQPublisher(RabbitMQPublisher):
             add_span_eiffel_attributes(span, event)
 
         _LOG.debug("[%s] Attempting to acquire 'send_event' lock", current_thread().name)
+        # Pylint is wrong.. pylint:disable=not-context-manager
         with self._lock, trace.use_span(span, end_on_exit=True) as _span:
             _LOG.debug("[%s] 'send_event' Lock acquired", current_thread().name)
             propagate.inject(properties.headers)

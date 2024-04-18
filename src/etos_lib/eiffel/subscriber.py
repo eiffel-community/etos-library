@@ -123,11 +123,13 @@ class TracingRabbitMQSubscriber(RabbitMQSubscriber):
         try:
             event = self._event(body)
         except:  # pylint:disable=bare-except
+            # Pylint is wrong.. pylint:disable=not-context-manager
             with trace.use_span(span, end_on_exit=True) as span:
                 raise
         if span.is_recording():
             add_span_eiffel_attributes(span, event)
         try:
+            # Pylint is wrong.. pylint:disable=not-context-manager
             with trace.use_span(span, end_on_exit=True):
                 response = self._event_call(event)
         finally:
