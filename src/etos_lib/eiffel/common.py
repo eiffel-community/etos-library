@@ -71,7 +71,7 @@ def add_span_eiffel_attributes(span: Span, event: EiffelBaseEvent) -> None:
     span.set_attribute(SpanAttributes.MESSAGING_MESSAGE_ID, event.meta.event_id)
 
 
-def _flatten(d: dict, parent_key: str = "", sep: str = ".") -> Iterable[str, str]:
+def _flatten(d: dict, parent_key: str = "", sep: str = ".") -> Iterable[tuple[str, str]]:
     """Flatten a dictionary to be compatible with opentelemetry."""
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
