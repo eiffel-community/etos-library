@@ -21,26 +21,17 @@ class Attributes:
     # General ETOS conventions
     SUITE_ID = "etos.suite.id"
     SUBSUITE_ID = "etos.subsuite.id"
+    TESTRUN_ID = "etos.testrun.id"
 
     # Testrunner conentions
-    TESTRUN_ID = "etos.testrun.id"
     TESTRUNNER_ID = "etos.testrunner.id"
-    TESTRUNNER_EXCEPTION = "etos.testrunner.exception"
 
     # Environment generic conventions
-    ENVIRONMENT = "etos.environment"  # environment description as JSON
+    ENVIRONMENT = "etos.subsuite.environment"  # environment description as JSON
     ENVIRONMENT_ID = "etos.environment.id"
-    ENVIRONMENT_EXCEPTION = "etos.environment.exception"
-    ENVIRONMENT_REQUEST = "etos.environment.request"
-    ENVIRONMENT_RESPONSE = "etos.environment.response"
 
     # Execution space conventions
-    EXECUTION_SPACE = "etos.environment.execution_space"
     EXECUTOR_ID = "etos.environment.execution_space.executor.id"
 
     # IUT conventions
-    IUT = "etos.environment.iut"
     IUT_DESCRIPTION = "etos.environment.iut.description" 
-
-    # Log area conventions
-    LOG_AREA = "etos.environment.log_area"
