@@ -28,6 +28,7 @@ class Attributes:
     TESTRUNNER_EXCEPTION = "etos.testrunner.exception"
 
     # Environment generic conventions
+    ENVIRONMENT = "etos.environment"  # environment description as JSON
     ENVIRONMENT_ID = "etos.environment.id"
     ENVIRONMENT_EXCEPTION = "etos.environment.exception"
     ENVIRONMENT_REQUEST = "etos.environment.request"
