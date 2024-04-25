@@ -23,8 +23,11 @@ class Attributes:
     SUBSUITE_ID = "etos.subsuite.id"
     TESTRUN_ID = "etos.testrun.id"
 
-    # Testrunner conentions
-    TESTRUNNER_ID = "etos.testrunner.id"
+    # Test Runner conventions
+    TEST_RUNNER_ID = "etos.test_runner.id"
+
+    # Suite Runner conventions
+    SUITE_RUNNER_JOB_ID = "etos.suite_runner.job.id"
 
     # Environment generic conventions
     ENVIRONMENT = "etos.subsuite.environment"  # environment description as JSON
