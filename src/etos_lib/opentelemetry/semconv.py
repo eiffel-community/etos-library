@@ -14,7 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS OpenTelemetry semantic conventions module."""
+from dataclasses import dataclass
 
+
+@dataclass(frozen=True)
 class Attributes:
     """Constants for ETOS OpenTelemetry semantic conventions."""
 
@@ -37,4 +40,4 @@ class Attributes:
     EXECUTOR_ID = "etos.environment.execution_space.executor.id"
 
     # IUT conventions
-    IUT_DESCRIPTION = "etos.environment.iut.description" 
+    IUT_DESCRIPTION = "etos.environment.iut.description"
