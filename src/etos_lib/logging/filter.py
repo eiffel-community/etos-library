@@ -16,6 +16,20 @@
 """ETOS filter."""
 import logging
 
+from opentelemetry import trace
+
+
+def get_current_otel_trace_id() -> str:
+    """Get current OpenTelemetry trace id.
+
+    The OpenTelemetry trace id is a big integer by default, which is out of range
+    of the type 'long' in Elastic. For this reason the trace id is returned as string.
+
+    If OpenTelemetry is not enabled, this function will return "0".
+    """
+    current_span = trace.get_current_span()
+    return str(current_span.get_span_context().trace_id)
+
 
 class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
     """Filter for adding extra application specific data to log messages."""
@@ -49,6 +63,7 @@ class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
         record.application = self.application
         record.version = self.version
         record.environment = self.environment
+        record.opentelemetry_trace_id = get_current_otel_trace_id()
 
         # Add each thread-local attribute to record.
         for attr in dir(self.local):
