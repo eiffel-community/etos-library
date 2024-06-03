@@ -28,7 +28,9 @@ def get_current_otel_trace_id() -> str:
     If OpenTelemetry is not enabled, this function will return "0".
     """
     current_span = trace.get_current_span()
-    return str(current_span.get_span_context().trace_id)
+    trace_id = current_span.get_span_context().trace_id
+    trace_id = hex(trace_id).replace("0x", "")
+    return trace_id
 
 
 class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
