@@ -25,7 +25,7 @@ def get_current_otel_trace_id() -> str:
     The OpenTelemetry trace id is a big integer by default, which is out of range
     of the type 'long' in Elastic. For this reason the trace id is returned as string.
 
-    If OpenTelemetry is not enabled, this function will return "0".
+    If OpenTelemetry is not enabled, this function will return "00000000000000000000000000000000".
     """
     current_span = trace.get_current_span()
     trace_id = current_span.get_span_context().trace_id
