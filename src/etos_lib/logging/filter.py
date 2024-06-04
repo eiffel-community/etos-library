@@ -29,8 +29,7 @@ def get_current_otel_trace_id() -> str:
     """
     current_span = trace.get_current_span()
     trace_id = current_span.get_span_context().trace_id
-    trace_id = hex(trace_id).replace("0x", "")
-    return trace_id
+    return trace.format_trace_id(trace_id)
 
 
 class EtosFilter(logging.Filter):  # pylint:disable=too-few-public-methods
