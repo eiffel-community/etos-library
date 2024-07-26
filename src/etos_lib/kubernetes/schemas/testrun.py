@@ -64,18 +64,22 @@ class Suite(BaseModel):
     name: str
     priority: Optional[int] = 1
     tests: List[Test]
+    dataset: dict
 
     @classmethod
-    def from_tercc(cls, suite: dict) -> "Suite":
+    def from_tercc(cls, suite: dict, dataset: dict) -> "Suite":
         """From tercc will create a Suite from an Eiffel TERCC event.
 
         A TERCC is a list of suites, this method takes a single one of those
         suites. For loading multiple suites, see :method:`TestRunSpec.from_tercc`
+        Dataset is a required parameter as it is not part of the Eiffel TERCC
+        event.
         """
         return Suite(
             name=suite.get("name", "NoName"),
             priority=suite.get("priority", 1),
             tests=cls.tests_from_recipes(suite.get("recipes", [])),
+            dataset=dataset,
         )
 
     @classmethod
@@ -136,9 +140,13 @@ class TestRunSpec(BaseModel):
     suites: List[Suite]
 
     @classmethod
-    def from_tercc(cls, tercc: list[dict]) -> list[Suite]:
-        """From tercc loads a list of suites from an eiffel TERCC."""
-        return [Suite.from_tercc(suite) for suite in tercc]
+    def from_tercc(cls, tercc: list[dict], dataset: dict) -> list[Suite]:
+        """From tercc loads a list of suites from an eiffel TERCC.
+
+        Dataset is a required parameter as it is not part of the Eiffel TERCC
+        event.
+        """
+        return [Suite.from_tercc(suite, dataset) for suite in tercc]
 
 
 class TestRun(BaseModel):
