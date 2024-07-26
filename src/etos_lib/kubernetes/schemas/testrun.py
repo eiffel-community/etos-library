@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Models for the TestRun resource."""
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Union
 from pydantic import BaseModel
 from .common import Metadata, Image
 
@@ -140,13 +140,20 @@ class TestRunSpec(BaseModel):
     suites: List[Suite]
 
     @classmethod
-    def from_tercc(cls, tercc: list[dict], dataset: dict) -> list[Suite]:
+    def from_tercc(cls, tercc: list[dict], datasets: Union[list[dict], dict]) -> list[Suite]:
         """From tercc loads a list of suites from an eiffel TERCC.
 
         Dataset is a required parameter as it is not part of the Eiffel TERCC
         event.
         """
-        return [Suite.from_tercc(suite, dataset) for suite in tercc]
+        # This code mimics what the environment provider did before.
+        if isinstance(datasets, list):
+            assert len(datasets) == len(
+                tercc
+            ), "If multiple datasets are provided it must correspond with number of test suites"
+        else:
+            datasets = [datasets] * len(tercc)
+        return [Suite.from_tercc(suite, datasets.pop(0)) for suite in tercc]
 
 
 class TestRun(BaseModel):
