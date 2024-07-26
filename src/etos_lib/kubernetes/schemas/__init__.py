@@ -13,9 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""ETOS Environment Provider Kubernetes module."""
-from .jobs import Job
-from .etos import Kubernetes, Resource
-from .environment import Environment
-from .testrun import TestRun
-from .provider import Provider
+"""ETOS Kubernetes schemas."""
+from .common import Metadata
+from .environment import *
+from .testrun import *
+from .provider import *
