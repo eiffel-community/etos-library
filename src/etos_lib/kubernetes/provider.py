@@ -13,9 +13,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""ETOS Environment Provider Kubernetes module."""
-from .jobs import Job
+"""Provider custom resource manager ETOS."""
 from .etos import Kubernetes, Resource
-from .environment import Environment
-from .testrun import TestRun
-from .provider import Provider
+
+
+class Provider(Resource):
+    """Provider handles the Provider custom Kubernetes resources."""
+
+    def __init__(self, client: Kubernetes, strict: bool = False):
+        """Set up Kubernetes client.
+
+        :param strict: If True, the client will raise exceptions when Kubernetes could not
+        be reached as expected such as the ETOS namespace not being able to be determined.
+        The default (False) will just ignore any problems.
+        """
+        self.strict = strict
+        with self._catch_errors_if_not_strict():
+            self.client = client.providers
+            self.namespace = client.namespace
