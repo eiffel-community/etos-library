@@ -130,10 +130,11 @@ def setup_rabbitmq_logging(log_filter):
 
     root_logger = logging.getLogger()
 
-    # These have to be removed as they create a loop.
-    # They will still work with the other handlers.
+    # These loggers need to be prevented from propagating their logs
+    # to RabbitMQLogPublisher. If they aren't, this may cause a deadlock.
     logging.getLogger("pika").propagate = False
     logging.getLogger("eiffellib.publishers.rabbitmq_publisher").propagate = False
+    logging.getLogger("etos_lib.eiffel.publisher").propagate = False
     logging.getLogger("base_rabbitmq").propagate = False
 
     rabbitmq = RabbitMQLogPublisher(**Config().etos_rabbitmq_publisher_data(), routing_key=None)
