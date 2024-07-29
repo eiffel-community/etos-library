@@ -133,6 +133,7 @@ class TestRunSpec(BaseModel):
     cluster: str
     artifact: str
     suiteRunner: Image
+    logListener: Image
     environmentProvider: Image
     id: str
     identity: str
