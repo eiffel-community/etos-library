@@ -40,7 +40,7 @@ def local_scheme(version) -> str:
             # will create simple versions like 4.1.0
             return ""
     # For all other cases, always add the git reference (like "g7839952")
-    return f"{version.node}"
+    return f"+{version.node}"
 
 
 if __name__ == "__main__":
