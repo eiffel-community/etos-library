@@ -20,9 +20,10 @@ except VersionConflict:
 
 
 if __name__ == "__main__":
-    setup(use_pyscaffold=True,
-          use_scm_version={
-              "version_scheme": "only-version",
-              "local_scheme": "dirty-tag",
-          }
+    setup(
+        use_pyscaffold=True,
+        use_scm_version={
+            "version_scheme": "only-version",
+            "local_scheme": "dirty-tag",
+        },
     )
