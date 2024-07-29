@@ -3,7 +3,7 @@
 from setuptools import setup
 from setuptools_scm.version import get_local_dirty_tag
 
-RELEASE_BRANCH = "20240729_setuptools_scm"
+RELEASE_BRANCH = "main"
 
 
 def version_scheme(version) -> str:

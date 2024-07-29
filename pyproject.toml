@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=72", "wheel", "setuptools_scm[toml]>=8"]
+
+[project]
+name = "etos_lib"
+dynamic = ["version"]
+description = "ETOS Library"
+authors = [{name = "Tobias Persson", email = "tobias.persson@axis.com"}]
+license = { text  = "Apache License, Version 2.0" }
+readme = "README.rst"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License"
+]
+dependencies = [
+    "gql[requests]~=3.4",
+    "redis~=4.5",
+    "eiffellib[rabbitmq]~=2.4",
+    "requests~=2.31",
+    "kubernetes~=26.1",
+    "pyyaml~=6.0",
+    "opentelemetry-api~=1.21",
+    "opentelemetry-semantic-conventions~=0.42b0",
+    "setuptools_scm~=8.0"
+]
+
+[project.urls]
+Documentation = "https://etos.readthedocs.io/"
+Homepage = "https://github.com/eiffel-community/etos-library"
+Repository = "https://github.com/eiffel-community/etos-library"
+
+[project.scripts]
+
+[project.optional-dependencies]
+testing = ["pytest", "pytest-cov"]
+
+[tool.flake8]
+exclude = [".tox", "build", "dist", ".eggs", "docs/conf.py"]
+
+[tool.pytest.ini_options]
+addopts = "--cov etos_lib --cov-report term-missing --verbose"
+norecursedirs = ["dist", "build", ".tox"]
+testpaths = ["tests"]
+
+[tool.build_sphinx]
+source_dir = "docs"
+build_dir = "build/sphinx"
+
+[tool.devpi.upload]
+no-vcs = 1
+formats = "bdist_wheel"
+
+[tool.setuptools_scm]
+version_scheme = "setup:version_scheme"
+local_scheme = "setup:local_scheme"
