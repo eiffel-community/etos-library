@@ -3,8 +3,6 @@
 from setuptools import setup
 from setuptools_scm.version import get_local_dirty_tag
 
-RELEASE_BRANCH = "main"
-
 
 def version_scheme(version) -> str:
     """Get version component for the current commit.
@@ -15,7 +13,7 @@ def version_scheme(version) -> str:
         # If the current commit has a tag, use the tag as version, regardless of branch.
         # Note: Github CI creates releases from detached HEAD, not from a particular branch.
         return f"{version.tag}"
-    elif version.branch == RELEASE_BRANCH and version.tag and version.distance > 0:
+    elif version.branch == "main" and version.tag and version.distance > 0:
         # For untagged commits on the release branch always add a distance like ".post3"
         return f"{version.tag}.post{version.distance}"
     else:
