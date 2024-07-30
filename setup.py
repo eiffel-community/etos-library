@@ -17,7 +17,7 @@ def version_scheme(version) -> str:
         # For untagged commits on the release branch always add a distance like ".post3"
         return f"{version.tag}.post{version.distance}"
     else:
-        # For non-release branches, make the version as dev and distance:
+        # For non-release branches, mark the version as dev and distance:
         return f"{version.tag}.dev{version.distance}"
 
 
