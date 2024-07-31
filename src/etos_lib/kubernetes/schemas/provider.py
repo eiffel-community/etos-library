@@ -14,54 +14,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Models for the Provider resource."""
-import json
-from json.decoder import JSONDecodeError
 from typing import Optional, Union
-from typing_extensions import Annotated
 from pydantic import BaseModel
-from pydantic.functional_validators import AfterValidator
 from .common import Metadata
-
-
-def json_load_str_if_possible(data: str) -> Union[dict, str]:
-    """Attempt to load a str as JSON or just return the str."""
-    try:
-        return json.loads(data)
-    except JSONDecodeError:
-        return data
-
-
-JSON = Annotated[str, AfterValidator(json_load_str_if_possible)]
 
 
 class JSONTasList(BaseModel):
     """JSONTasList describes the list part of a JSONTas provider."""
 
-    possible: JSON
-    available: JSON
+    possible: dict
+    available: Union[dict, str]
 
 
 class BaseProvider(BaseModel):
     """BaseProvider describes the base parts of JSONTas providers."""
 
     id: str
-    checkin: Optional[JSON] = None
-    checkout: Optional[JSON] = None
+    checkin: Optional[dict] = None
+    checkout: Optional[dict] = None
     list: JSONTasList
 
 
 class Stage(BaseModel):
     """Stage is the IUT prepare stage for an IUT provider."""
 
-    steps: str
+    steps: dict
 
 
 class JSONTasIutPrepareStages(BaseModel):
     """JSONTasIUTPrepareStages describes the prepare stages for an IUT provider."""
 
-    environmentProvider: Optional[Stage] = None
-    suiteRunner: Optional[Stage] = None
-    testRunner: Optional[Stage] = None
+    environment_provider: Optional[Stage] = None
+    suite_runner: Optional[Stage] = None
+    test_runner: Optional[Stage] = None
 
 
 class JSONTasIutPrepare(BaseModel):
@@ -88,8 +73,8 @@ class JSONTas(BaseModel):
     """JSONTas describes the JSONTas specification of a provider."""
 
     iut: Optional[JSONTasIut] = None
-    executionSpace: Optional[JSONTasExecutionSpace] = None
-    logArea: Optional[JSONTasLogArea] = None
+    execution_space: Optional[JSONTasExecutionSpace] = None
+    log: Optional[JSONTasLogArea] = None
 
 
 class Healthcheck(BaseModel):
@@ -103,8 +88,8 @@ class ProviderSpec(BaseModel):
     """ProviderSpec is the specification of a Provider Kubernetes resource."""
 
     type: str
-    host: str
-    healthCheck: Healthcheck
+    host: Optional[str] = None
+    healthCheck: Optional[Healthcheck] = None
     jsontas: Optional[JSONTas] = None
 
 
@@ -131,14 +116,14 @@ class Provider(BaseModel):
                 ruleset = self.spec.jsontas.iut.model_dump()
             elif self.spec.type == "execution-space":
                 assert (
-                    self.spec.jsontas.executionSpace is not None
+                    self.spec.jsontas.execution_space is not None
                 ), "Execution space must be a part of a Provider with type 'execution-space'."
-                ruleset = self.spec.jsontas.executionSpace.model_dump()
+                ruleset = self.spec.jsontas.execution_space.model_dump()
             elif self.spec.type == "log-area":
                 assert (
-                    self.spec.jsontas.logArea is not None
+                    self.spec.jsontas.log is not None
                 ), "Log area must be a part of a Provider with type 'log-area'."
-                ruleset = self.spec.jsontas.logArea.model_dump()
+                ruleset = self.spec.jsontas.log.model_dump()
         ruleset["id"] = self.metadata.name
         return ruleset
 
