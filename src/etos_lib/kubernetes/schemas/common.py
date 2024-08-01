@@ -37,6 +37,8 @@ class Metadata(BaseModel):
     namespace: str = "default"
     uid: Optional[str] = None
     ownerReferences: list[OwnerReference] = []
+    labels: Optional[dict[str, str]] = None
+    annotations: Optional[dict[str, str]] = None
 
 
 class Image(BaseModel):
