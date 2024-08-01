@@ -38,7 +38,7 @@ class BaseProvider(BaseModel):
 class Stage(BaseModel):
     """Stage is the IUT prepare stage for an IUT provider."""
 
-    steps: dict
+    steps: dict = {}
 
 
 class JSONTasIutPrepareStages(BaseModel):
