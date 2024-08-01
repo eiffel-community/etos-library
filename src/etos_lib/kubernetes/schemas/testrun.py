@@ -138,6 +138,7 @@ class TestRunSpec(BaseModel):
     id: str
     identity: str
     providers: Providers
+    suiteSource: str
     suites: List[Suite]
 
     @classmethod
