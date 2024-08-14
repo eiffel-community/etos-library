@@ -17,15 +17,43 @@
 from typing import Optional
 from pydantic import BaseModel
 from .common import Metadata
+from .testrun import Test
+
+class Iut(BaseModel):
+    id: str
+
+class ExecutionSpace(BaseModel):
+    id: str
+    testRunner: str
+
+class LogArea(BaseModel):
+    id: str
+
+
+class EnvironmentProviders(BaseModel):
+    iut: Optional[Iut] = None
+    executionSpace: Optional[ExecutionSpace] = None
+    logArea: Optional[LogArea] = None
+
+
+class Splitter(BaseModel):
+    tests: list[Test]
 
 
 class EnvironmentRequestSpec(BaseModel):
     """EnvironmentRequstSpec is the specification of an EnvironmentRequest Kubernetes resource."""
-
-    iut: str
-    logArea: str
-    executionSpace: str
-    testrun: str
+    id: str
+    name: Optional[str] = None
+    identifier: str
+    image: str
+    imagePullPolicy: str
+    artifact: str
+    identity: str
+    minimumAmount: int
+    maximumAmount: int
+    dataset: Optional[dict] = None
+    providers: EnvironmentProviders
+    splitter: Splitter
 
 
 class EnvironmentRequest(BaseModel):

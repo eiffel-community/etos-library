@@ -16,5 +16,6 @@
 """ETOS Kubernetes schemas."""
 from .common import Metadata
 from .environment import *
+from .environment_request import *
 from .testrun import *
 from .provider import *

@@ -17,5 +17,6 @@
 from .jobs import Job
 from .etos import Kubernetes, Resource
 from .environment import Environment
+from .environment_request import EnvironmentRequest
 from .testrun import TestRun
 from .provider import Provider
