@@ -127,12 +127,18 @@ class Providers(BaseModel):
     iut: Optional[str] = "default"
 
 
+class TestRunner(BaseModel):
+    """Test runner version."""
+    version: str
+
+
 class TestRunSpec(BaseModel):
     """TestRunSpec is the specification of a TestRun Kubernetes resource."""
 
     cluster: str
     artifact: str
     suiteRunner: Image
+    testRunner: TestRunner
     logListener: Image
     environmentProvider: Image
     id: str
