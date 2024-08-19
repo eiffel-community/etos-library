@@ -129,6 +129,7 @@ class Providers(BaseModel):
 
 class TestRunner(BaseModel):
     """Test runner version."""
+
     version: str
 
 

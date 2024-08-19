@@ -19,29 +19,43 @@ from pydantic import BaseModel
 from .common import Metadata
 from .testrun import Test
 
+
 class Iut(BaseModel):
+    """Iut describes the IUT provider to use for a request."""
+
     id: str
 
+
 class ExecutionSpace(BaseModel):
+    """ExecutionSpace describes the execution space provider to use for a request."""
+
     id: str
     testRunner: str
 
+
 class LogArea(BaseModel):
+    """LogArea describes the log area provider to use for a request."""
+
     id: str
 
 
 class EnvironmentProviders(BaseModel):
+    """EnvironmentProvider describes the providers to use for a request."""
+
     iut: Optional[Iut] = None
     executionSpace: Optional[ExecutionSpace] = None
     logArea: Optional[LogArea] = None
 
 
 class Splitter(BaseModel):
+    """Splitter describes the configuration for the environment splitter."""
+
     tests: list[Test]
 
 
 class EnvironmentRequestSpec(BaseModel):
     """EnvironmentRequstSpec is the specification of an EnvironmentRequest Kubernetes resource."""
+
     id: str
     name: Optional[str] = None
     identifier: str
