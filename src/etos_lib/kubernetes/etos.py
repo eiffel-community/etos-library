@@ -70,13 +70,6 @@ class Resource:
             if self.strict:
                 raise
 
-    def __full_resource_name(self, name: str):
-        """Full resource name will return the group, version, namespace and kind."""
-        return (
-            f"{self.client.group}/{self.client.api_version}/{self.client.kind} "
-            f"{self.namespace}/{name}"
-        )
-
     def get(self, name: str) -> Optional[ResourceInstance]:
         """Get a resource from Kubernetes by name."""
         try:
