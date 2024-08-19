@@ -45,7 +45,6 @@ class Resource:
     client: DynamicResource
     namespace: str = "default"
     strict: bool = False
-    __cache = {}
 
     @contextmanager
     def _catch_errors_if_not_strict(self):
@@ -78,23 +77,11 @@ class Resource:
             f"{self.namespace}/{name}"
         )
 
-    def get(self, name: str, cache=True) -> Optional[ResourceInstance]:
-        """Get a resource from Kubernetes by name.
-
-        if Cache is set to False, then make sure to get the resource from kubernetes,
-        if Cache is True, then the cache will be used every time.
-        There is no cache invalidation!
-        """
-        resource: Optional[ResourceInstance] = None
-        if cache:
-            resource = self.__cache.get(self.__full_resource_name(name))
-        if resource is not None:
-            return resource
+    def get(self, name: str) -> Optional[ResourceInstance]:
+        """Get a resource from Kubernetes by name."""
         try:
             with self._catch_errors_if_not_strict():
                 resource = self.client.get(name=name, namespace=self.namespace)  # type: ignore
-                if resource:
-                    self.__cache[self.__full_resource_name(name)] = resource
         except NotFoundError:
             resource = None
         return resource
