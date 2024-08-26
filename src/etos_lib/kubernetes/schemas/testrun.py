@@ -16,7 +16,7 @@
 """Models for the TestRun resource."""
 from typing import Optional, List, Any, Union
 from pydantic import BaseModel
-from .common import Metadata, Image
+from .common import Metadata, Image, Retention
 
 __all__ = ["TestRun", "TestRunSpec"]
 
@@ -147,6 +147,7 @@ class TestRunSpec(BaseModel):
     providers: Providers
     suiteSource: str
     suites: List[Suite]
+    retention: Optional[Retention] = None
 
     @classmethod
     def from_tercc(cls, tercc: list[dict], datasets: Union[list[dict], dict]) -> list[Suite]:

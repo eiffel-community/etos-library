@@ -46,3 +46,10 @@ class Image(BaseModel):
 
     image: str
     imagePullPolicy: str = "IfNotPresent"
+
+
+class Retention(BaseModel):
+    """Retention for ETOS testruns."""
+
+    failure: Optional[str] = None
+    success: Optional[str] = None
