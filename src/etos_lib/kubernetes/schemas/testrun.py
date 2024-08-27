@@ -136,16 +136,15 @@ class TestRunner(BaseModel):
 class TestRunSpec(BaseModel):
     """TestRunSpec is the specification of a TestRun Kubernetes resource."""
 
-    cluster: str
+    cluster: Optional[str] = None
     artifact: str
-    suiteRunner: Image
-    testRunner: TestRunner
-    logListener: Image
-    environmentProvider: Image
-    id: str
+    suiteRunner: Optional[Image] = None
+    testRunner: Optional[TestRunner] = None
+    logListener: Optional[Image] = None
+    environmentProvider: Optional[Image] = None
+    id: Optional[str] = None
     identity: str
     providers: Providers
-    suiteSource: str
     suites: List[Suite]
     retention: Optional[Retention] = None
 
