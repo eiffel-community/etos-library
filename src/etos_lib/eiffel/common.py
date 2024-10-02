@@ -27,7 +27,7 @@ from ..lib.config import Config
 
 PUBLISHER_TEMPLATE = "{SERVER_ADDRESS}:{SERVER_PORT},{RABBITMQ_VHOST},{RABBITMQ_EXCHANGE}"
 CONSUMER_TEMPLATE = "{RABBITMQ_QUEUE_NAME}"
-# pylint:disable=too-many-arguments
+# pylint:disable=too-many-arguments,too-many-positional-arguments
 
 
 def add_span_attributes(

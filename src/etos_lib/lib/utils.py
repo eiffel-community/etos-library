@@ -213,7 +213,7 @@ class Utils:
 
     def call(
         self, cmd, shell=False, env=None, executable=None, output=None, wait_output=True
-    ):  # pylint:disable=too-many-arguments
+    ):  # pylint:disable=too-many-arguments,too-many-positional-arguments
         """Call a system command.
 
         :param cmd: Command to run.
@@ -244,7 +244,7 @@ class Utils:
 
     def iterable_call(
         self, cmd, shell=False, env=None, executable=None, output=None, wait_output=True
-    ):  # pylint:disable=too-many-arguments
+    ):  # pylint:disable=too-many-arguments,too-many-positional-arguments
         """Call a system command and yield the output.
 
         :param cmd: Command to run.
