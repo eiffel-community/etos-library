@@ -13,10 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""ETOS Environment Provider Kubernetes module."""
-from .jobs import Job
+"""Provider custom resource manager ETOS."""
 from .etos import Kubernetes, Resource
-from .environment import Environment
-from .environment_request import EnvironmentRequest
-from .testrun import TestRun
-from .provider import Provider
+
+
+class Provider(Resource):
+    """Provider handles the Provider custom Kubernetes resources."""
+
+    def __init__(self, client: Kubernetes):
+        """Set up Kubernetes client."""
+        self.client = client.providers
+        self.namespace = client.namespace
