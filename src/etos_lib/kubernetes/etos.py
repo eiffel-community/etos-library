@@ -17,19 +17,13 @@
 import os
 import logging
 from pathlib import Path
-from contextlib import contextmanager
 from typing import Optional
 from pydantic import BaseModel
 from kubernetes import config
 from kubernetes.client import api_client
-from kubernetes.client.exceptions import ApiException
 from kubernetes.dynamic import DynamicClient
 from kubernetes.dynamic.resource import Resource as DynamicResource, ResourceInstance
-from kubernetes.dynamic.exceptions import (
-    ResourceNotFoundError,
-    ResourceNotUniqueError,
-    NotFoundError,
-)
+from kubernetes.dynamic.exceptions import NotFoundError
 
 config.load_config()
 NAMESPACE_FILE = Path("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
@@ -44,56 +38,26 @@ class Resource:
 
     client: DynamicResource
     namespace: str = "default"
-    strict: bool = False
-
-    @contextmanager
-    def _catch_errors_if_not_strict(self):
-        """Catch errors if the strict flag is False, else raise."""
-        try:
-            yield
-        # Internal exceptions
-        except NoNamespace:
-            if self.strict:
-                raise
-        # Client exceptions
-        except ApiException:
-            if self.strict:
-                raise
-        # Dynamic client exceptions
-        except (ResourceNotFoundError, ResourceNotUniqueError):
-            if self.strict:
-                raise
-        # Built-in exceptions
-        except AttributeError:
-            # AttributeError happens if ResourceNotFoundError was raised when setting up
-            # clients.
-            if self.strict:
-                raise
 
     def get(self, name: str) -> Optional[ResourceInstance]:
         """Get a resource from Kubernetes by name."""
         try:
-            with self._catch_errors_if_not_strict():
-                resource = self.client.get(name=name, namespace=self.namespace)  # type: ignore
+            resource = self.client.get(name=name, namespace=self.namespace)  # type: ignore
         except NotFoundError:
             resource = None
         return resource
 
     def delete(self, name: str) -> bool:
         """Delete a resource by name."""
-        with self._catch_errors_if_not_strict():
-            if self.client.delete(name=name, namespace=self.namespace):  # type: ignore
-                return True
-            return False
+        if self.client.delete(name=name, namespace=self.namespace):  # type: ignore
+            return True
+        return False
 
     def create(self, model: BaseModel) -> bool:
         """Create a resource from a pydantic model."""
-        with self._catch_errors_if_not_strict():
-            if self.client.create(
-                body=model.model_dump(), namespace=self.namespace
-            ):  # type: ignore
-                return True
-            return False
+        if self.client.create(body=model.model_dump(), namespace=self.namespace):  # type: ignore
+            return True
+        return False
 
     def exists(self, name: str) -> bool:
         """Test if a resource with name exists."""

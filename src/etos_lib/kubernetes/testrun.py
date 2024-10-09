@@ -20,14 +20,7 @@ from .etos import Kubernetes, Resource
 class TestRun(Resource):
     """TestRun handles the TestRun custom Kubernetes resources."""
 
-    def __init__(self, client: Kubernetes, strict: bool = False):
-        """Set up Kubernetes client.
-
-        :param strict: If True, the client will raise exceptions when Kubernetes could not
-        be reached as expected such as the ETOS namespace not being able to be determined.
-        The default (False) will just ignore any problems.
-        """
-        self.strict = strict
-        with self._catch_errors_if_not_strict():
-            self.client = client.testruns
-            self.namespace = client.namespace
+    def __init__(self, client: Kubernetes):
+        """Set up Kubernetes client."""
+        self.client = client.testruns
+        self.namespace = client.namespace
