@@ -13,6 +13,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License"
 ]
+requires-python = ">=3.9"
+
 dependencies = [
     "gql[requests]~=3.4",
     "redis~=4.5",
@@ -24,6 +26,14 @@ dependencies = [
     "opentelemetry-semantic-conventions~=0.42b0",
     "setuptools_scm~=8.0"
 ]
+
+[options]
+zip_safe = false
+include_package_data = true
+
+[options.packages.find]
+where = "src"
+exclude = ["tests"]
 
 [project.urls]
 Documentation = "https://etos.readthedocs.io/"
