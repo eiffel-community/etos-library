@@ -13,6 +13,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License"
 ]
+requires-python = ">=3.9"
+
 dependencies = [
     "gql[requests]~=3.4",
     "redis~=4.5",
@@ -28,7 +30,6 @@ dependencies = [
 [options]
 zip_safe = false
 include_package_data = true
-python_requires = ">=3.9"
 
 [options.packages.find]
 where = "src"
