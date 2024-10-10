@@ -25,6 +25,15 @@ dependencies = [
     "setuptools_scm~=8.0"
 ]
 
+[options]
+zip_safe = false
+include_package_data = true
+python_requires = ">=3.9"
+
+[options.packages.find]
+where = "src"
+exclude = ["tests"]
+
 [project.urls]
 Documentation = "https://etos.readthedocs.io/"
 Homepage = "https://github.com/eiffel-community/etos-library"
