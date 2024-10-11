@@ -53,6 +53,5 @@ addopts = "--cov etos_lib --cov-report term-missing --verbose"
 norecursedirs = ["dist", "build", ".tox"]
 testpaths = ["tests"]
 
-[tool.setuptools.packages.find]
-where = "src"
-exclude = ["tests"]
+[tool.setuptools.packages]
+find = { where = ["src"], exclude = ["tests"] }
