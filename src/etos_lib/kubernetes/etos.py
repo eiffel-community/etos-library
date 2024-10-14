@@ -34,18 +34,25 @@ class NoNamespace(Exception):
 
 
 class Resource:
-    """Resource is the base resource client for ETOS custom resources."""
+    """Resource is the base resource client for ETOS custom resources.
+
+    This resource base class is used by our custom resources to, somewhat, mimic
+    the behavior of a built-in resource from Kubernetes. This means that we don't
+    do any error handling as that is not done in the built-in Kubernetes client.
+
+    While we do somewhat mimic the behavior we don't necessarily mimic the "API"
+    of the built-in resources. For example, we return boolean where the built-in
+    would return the Kubernetes API response. We do this because of how we typically
+    use Kubernetes in our services. If the Kubernetes API response is preferred
+    we can still use the client :obj:`DynamicResource` directly.
+    """
 
     client: DynamicResource
     namespace: str = "default"
 
     def get(self, name: str) -> Optional[ResourceInstance]:
         """Get a resource from Kubernetes by name."""
-        try:
-            resource = self.client.get(name=name, namespace=self.namespace)  # type: ignore
-        except NotFoundError:
-            resource = None
-        return resource
+        return self.client.get(name=name, namespace=self.namespace)  # type: ignore
 
     def delete(self, name: str) -> bool:
         """Delete a resource by name."""
@@ -61,7 +68,10 @@ class Resource:
 
     def exists(self, name: str) -> bool:
         """Test if a resource with name exists."""
-        return self.get(name) is not None
+        try:
+            return self.get(name) is not None
+        except NotFoundError:
+            return False
 
 
 class Kubernetes:
