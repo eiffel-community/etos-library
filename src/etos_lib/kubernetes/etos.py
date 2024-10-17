@@ -17,15 +17,14 @@
 import os
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 from pydantic import BaseModel
-from kubernetes import config
+from kubernetes.config import load_config, ConfigException
 from kubernetes.client import api_client
 from kubernetes.dynamic import DynamicClient
 from kubernetes.dynamic.resource import Resource as DynamicResource, ResourceInstance
 from kubernetes.dynamic.exceptions import NotFoundError
 
-config.load_config()
 NAMESPACE_FILE = Path("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 
 
@@ -84,10 +83,26 @@ class Kubernetes:
     __namespace = None
     logger = logging.getLogger(__name__)
 
-    def __init__(self, version="v1alpha1"):
+    def __init__(self, version="v1alpha1", config_path: Union[None, str, Path] = None):
         """Initialize a dynamic client with version."""
+        self.load_kubernetes_config(config_path)
         self.version = f"etos.eiffel-community.github.io/{version}"
         self.__client = DynamicClient(api_client.ApiClient())
+
+    def load_kubernetes_config(self, path: Union[None, str, Path]):
+        """Load a Kubernetes config if possible, will log an error if not possible.
+
+        If the config is not loaded properly then the Kubernetes client will fail in errors
+        later. We catch the exception instead of raising it up the stack so that tests
+        are easier to write without having to catch Exceptions in them.
+        """
+        try:
+            if path is not None:
+                load_config(kube_config_path=str(path))
+            else:
+                load_config()
+        except ConfigException:
+            self.logger.exception("Failed to load Kubernetes config. The client won't work.")
 
     @property
     def namespace(self) -> str:
