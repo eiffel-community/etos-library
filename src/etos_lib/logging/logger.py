@@ -28,19 +28,27 @@ Example::
     >>> [2020-12-16 10:35:00][cb7c8cd9-40a6-4ecc-8321-a1eae6beae35] INFO: Hello!
 
 """
-import sys
 import atexit
-from pathlib import Path
-import threading
 import logging
 import logging.config
-from yaml import load, SafeLoader
-from etos_lib.logging.filter import EtosFilter
-from etos_lib.logging.formatter import EtosLogFormatter
-from etos_lib.logging.rabbitmq_handler import RabbitMQHandler
-from etos_lib.logging.log_publisher import RabbitMQLogPublisher
+import sys
+import threading
+from pathlib import Path
+
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+from opentelemetry.sdk.resources import Resource
+from yaml import SafeLoader, load
+
 from etos_lib.lib.config import Config
 from etos_lib.lib.debug import Debug
+from etos_lib.logging.filter import EtosFilter
+from etos_lib.logging.formatter import EtosLogFormatter
+from etos_lib.logging.log_processors import ToStringProcessor
+from etos_lib.logging.log_publisher import RabbitMQLogPublisher
+from etos_lib.logging.rabbitmq_handler import RabbitMQHandler
 
 DEFAULT_CONFIG = Path(__file__).parent.joinpath("default_config.yaml")
 DEFAULT_LOG_PATH = Debug().default_log_path
@@ -48,7 +56,7 @@ DEFAULT_LOG_PATH = Debug().default_log_path
 FORMAT_CONFIG = threading.local()
 
 
-def setup_file_logging(config, log_filter):
+def setup_file_logging(config: dict, log_filter: EtosFilter) -> None:
     """Set up logging to file using the ETOS log formatter.
 
     Cofiguration file parameters ('file' must exist or no file handler is set up):
@@ -78,7 +86,9 @@ def setup_file_logging(config, log_filter):
     root_logger = logging.getLogger()
 
     file_handler = logging.handlers.RotatingFileHandler(
-        logfile, maxBytes=max_bytes, backupCount=max_files
+        logfile,
+        maxBytes=max_bytes,
+        backupCount=max_files,
     )
     file_handler.setFormatter(EtosLogFormatter())
     file_handler.setLevel(loglevel)
@@ -86,7 +96,7 @@ def setup_file_logging(config, log_filter):
     root_logger.addHandler(file_handler)
 
 
-def setup_stream_logging(config, log_filter):
+def setup_stream_logging(config: dict, log_filter: EtosFilter) -> None:
     """Set up logging to stdout stream.
 
     Cofiguration file parameters ('stream' must exist or no stream handler is set up):
@@ -109,7 +119,8 @@ def setup_stream_logging(config, log_filter):
     loglevel = getattr(logging, config.get("loglevel", "INFO"))
 
     logformat = config.get(
-        "logformat", "[%(asctime)s][%(identifier)s] %(levelname)s:%(name)s: %(message)s"
+        "logformat",
+        "[%(asctime)s][%(identifier)s] %(levelname)s:%(name)s: %(message)s",
     )
     dateformat = config.get("dateformat", "%Y-%m-%d %H:%M:%S")
     root_logger = logging.getLogger()
@@ -120,7 +131,7 @@ def setup_stream_logging(config, log_filter):
     root_logger.addHandler(stream_handler)
 
 
-def setup_rabbitmq_logging(log_filter):
+def setup_rabbitmq_logging(log_filter: EtosFilter) -> None:
     """Set up rabbitmq logging.
 
     :param log_filter: Logfilter to add to stream handler.
@@ -150,7 +161,41 @@ def setup_rabbitmq_logging(log_filter):
     root_logger.addHandler(rabbit_handler)
 
 
-def setup_logging(application, version, environment, config_file=DEFAULT_CONFIG):
+def setup_otel_logging(
+    log_filter: EtosFilter,
+    resource: Resource,
+    log_level: int = logging.INFO,
+) -> None:
+    """Set up OpenTelemetry logging signals.
+
+    :param log_filter: Logfilter to add to OpenTelemetry handler.
+    :type log_filter: :obj:`EtosFilter`
+    :param resource: OpenTelemetry Resource to use when instrumenting logs
+    :type resource: :obj:`Resource`
+    :param log_level: Log level to set in the OpenTelemetry log handler
+    :type log_filter: :obj:`int`
+    """
+    logger_provider = LoggerProvider(resource)
+    logger_provider.add_log_record_processor(ToStringProcessor())
+    logger_provider.add_log_record_processor(BatchLogRecordProcessor(OTLPLogExporter()))
+    otel_log_handler = LoggingHandler(logger_provider=logger_provider)
+
+    otel_log_handler.setFormatter(EtosLogFormatter())
+    otel_log_handler.addFilter(log_filter)
+    otel_log_handler.setLevel(log_level)
+
+    logging.getLogger().addHandler(otel_log_handler)
+
+    LoggingInstrumentor().instrument(set_logging_format=False)
+
+
+def setup_logging(
+    application: str,
+    version: str,
+    environment: str,
+    otel_resource: Resource = None,
+    config_file: Path = DEFAULT_CONFIG,
+) -> None:
     """Set up basic logging.
 
     :param application: Name of application to setup logging for.
@@ -182,9 +227,11 @@ def setup_logging(application, version, environment, config_file=DEFAULT_CONFIG)
     if logging_config.get("file"):
         setup_file_logging(logging_config.get("file"), log_filter)
     setup_rabbitmq_logging(log_filter)
+    if otel_resource:
+        setup_otel_logging(log_filter, otel_resource)
 
 
-def close_rabbit(rabbit):
+def close_rabbit(rabbit: RabbitMQLogPublisher) -> None:
     """Close down a rabbitmq connection."""
     rabbit.wait_for_unpublished_events()
     rabbit.close()
