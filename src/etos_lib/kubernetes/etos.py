@@ -76,6 +76,7 @@ class Resource:
 class Kubernetes:
     """Kubernetes is a client for fetching ETOS custom resources from Kubernetes."""
 
+    __client = None
     __providers = None
     __requests = None
     __testruns = None
@@ -87,7 +88,13 @@ class Kubernetes:
         """Initialize a dynamic client with version."""
         self.load_kubernetes_config(config_path)
         self.version = f"etos.eiffel-community.github.io/{version}"
-        self.__client = DynamicClient(api_client.ApiClient())
+
+    @property
+    def _client(self) -> DynamicClient:
+        """Client to use when communicating with Kubernetes."""
+        if self.__client is None:
+            self.__client = DynamicClient(api_client.ApiClient())
+        return self.__client
 
     def load_kubernetes_config(self, path: Union[None, str, Path]):
         """Load a Kubernetes config if possible, will log an error if not possible.
@@ -129,7 +136,7 @@ class Kubernetes:
     def providers(self) -> DynamicResource:
         """Providers request returns a client for Provider resources."""
         if self.__providers is None:
-            self.__providers = self.__client.resources.get(
+            self.__providers = self._client.resources.get(
                 api_version=self.version, kind="Provider"
             )
         return self.__providers
@@ -138,7 +145,7 @@ class Kubernetes:
     def environment_requests(self) -> DynamicResource:
         """Environment requests returns a client for EnvironmentRequest resources."""
         if self.__requests is None:
-            self.__requests = self.__client.resources.get(
+            self.__requests = self._client.resources.get(
                 api_version=self.version, kind="EnvironmentRequest"
             )
         return self.__requests
@@ -147,7 +154,7 @@ class Kubernetes:
     def environments(self) -> DynamicResource:
         """Environments returns a client for Environment resources."""
         if self.__environments is None:
-            self.__environments = self.__client.resources.get(
+            self.__environments = self._client.resources.get(
                 api_version=self.version, kind="Environment"
             )
         return self.__environments
@@ -156,5 +163,5 @@ class Kubernetes:
     def testruns(self) -> DynamicResource:
         """Testruns returns a client for TestRun resources."""
         if self.__testruns is None:
-            self.__testruns = self.__client.resources.get(api_version=self.version, kind="TestRun")
+            self.__testruns = self._client.resources.get(api_version=self.version, kind="TestRun")
         return self.__testruns
