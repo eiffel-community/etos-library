@@ -136,9 +136,7 @@ class Kubernetes:
     def providers(self) -> DynamicResource:
         """Providers request returns a client for Provider resources."""
         if self.__providers is None:
-            self.__providers = self._client.resources.get(
-                api_version=self.version, kind="Provider"
-            )
+            self.__providers = self._client.resources.get(api_version=self.version, kind="Provider")
         return self.__providers
 
     @property
