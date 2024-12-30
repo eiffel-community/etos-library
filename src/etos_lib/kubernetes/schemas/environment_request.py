@@ -58,7 +58,7 @@ class EnvironmentRequestSpec(BaseModel):
 
     id: str
     name: Optional[str] = None
-    identifier: str
+    identifier: Optional[str] = None
     image: str
     imagePullPolicy: str
     artifact: str

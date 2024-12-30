@@ -24,9 +24,9 @@ class EnvironmentSpec(BaseModel):
     """EnvironmentSpec is the specification of a Environment Kubernetes resource."""
 
     name: str
-    suite_id: str
-    sub_suite_id: str
-    test_suite_started_id: str
+    suite_id: Optional[str]
+    sub_suite_id: Optional[str]
+    test_suite_started_id: Optional[str]
     artifact: str
     context: str
     priority: int = 1
