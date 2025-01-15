@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Custom log precessors for use with Open Telemetry logging signals."""
+"""Custom log processors for use with Open Telemetry logging signals."""
 
 from opentelemetry.sdk._logs import LogData, LogRecordProcessor
 
