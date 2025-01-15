@@ -22,7 +22,7 @@ class ToStringProcessor(LogRecordProcessor):
     """Simple log record processor to convert all log records to type string."""
 
     def emit(self, log_data: LogData) -> None:
-        """Emit the `LogData`."""
+        """Change record body to string and emit the `LogData`."""
         record = log_data.log_record
         if not isinstance(record.body, (str, bool, int, float)):
             record.body = str(record.body)
