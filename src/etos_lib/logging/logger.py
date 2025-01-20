@@ -169,11 +169,8 @@ def setup_otel_logging(
     """Set up OpenTelemetry logging signals.
 
     :param log_filter: Logfilter to add to OpenTelemetry handler.
-    :type log_filter: :obj:`EtosFilter`
     :param resource: OpenTelemetry Resource to use when instrumenting logs
-    :type resource: :obj:`Resource`
     :param log_level: Log level to set in the OpenTelemetry log handler
-    :type log_filter: :obj:`int`
     """
     logger_provider = LoggerProvider(resource)
     logger_provider.add_log_record_processor(ToStringProcessor())
