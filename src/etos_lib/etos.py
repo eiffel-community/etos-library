@@ -18,7 +18,6 @@ from .eiffel.publisher import TracingRabbitMQPublisher as RabbitMQPublisher
 from .eiffel.subscriber import TracingRabbitMQSubscriber as RabbitMQSubscriber
 from .graphql.query_handler import GraphQLQueryHandler
 from .lib.config import Config
-from .lib.database import Database
 from .lib.debug import Debug
 from .lib.events import Events
 from .lib.exceptions import (
@@ -45,7 +44,6 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
     __http = None
     __debug = None
     __feature_flags = None
-    __database = None
 
     def __init__(self, service_name, host, name, domain_id=None):
         """Initialize source and service name."""
@@ -137,10 +135,3 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         if self.__graphql is None:
             self.__graphql = GraphQLQueryHandler()
         return self.__graphql
-
-    @property
-    def database(self):
-        """Entry to ETOS Library database service."""
-        if self.__database is None:
-            self.__database = Database()
-        return self.__database

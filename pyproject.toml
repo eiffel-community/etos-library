@@ -17,7 +17,6 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = [
     "gql[requests]~=3.4",
-    "redis~=4.5",
     "eiffellib[rabbitmq]~=2.4",
     "requests~=2.31",
     "kubernetes~=26.1",
