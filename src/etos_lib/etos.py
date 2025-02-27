@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library module."""
+import time
+from etos_lib.messaging.publisher import Publisher
 from .eiffel.publisher import TracingRabbitMQPublisher as RabbitMQPublisher
 from .eiffel.subscriber import TracingRabbitMQSubscriber as RabbitMQSubscriber
 from .graphql.query_handler import GraphQLQueryHandler
@@ -77,6 +79,30 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         if not self.debug.disable_receiving_events:
             self.subscriber.start()
         self.config.set("subscriber", self.subscriber)
+
+    def messagebus_publisher(self) -> Publisher:
+        """Start the internal messagebus publisher using config data from ETOS library."""
+        publisher = self.config.get("internal_publisher")
+        if publisher is None:
+            connection_parameters = self.config.etos_rabbitmq_publisher_data()
+            if not connection_parameters:
+                raise PublisherConfigurationMissing
+            publisher = Publisher(
+                connection_parameters.get("host"),
+                connection_parameters.get("username"),
+                connection_parameters.get("password"),
+                connection_parameters.get("port", 5671),
+                connection_parameters.get("vhost"),
+                connection_parameters.get("ssl", True),
+            )
+            if not self.debug.disable_sending_events:
+                publisher.start()
+                # Wait for start.
+                # No timeout necessary since there is a built-in timeout in the publisher.
+                while not publisher.started.is_set():
+                    time.sleep(0.1)
+            self.config.set("internal_publisher", publisher)
+        return publisher
 
     @property
     def debug(self):
