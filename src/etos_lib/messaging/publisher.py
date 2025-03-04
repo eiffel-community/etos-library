@@ -68,20 +68,31 @@ class Publisher:
         """Initialize the Publisher object."""
         self.stream_name = stream_name
         self.__connection_string = connection_string
-        self.__library = ctypes.cdll.LoadLibrary(str(LIBRARY_PATH))
-        self.__connect = self.__library.Connect
+        self.__setup_bindings(LIBRARY_PATH)
+
+    def __setup_bindings(self, library_path: Path):
+        """Setup the bindings for the Publisher."""
+        self.__library = ctypes.cdll.LoadLibrary(str(library_path))
+        self.__handler = self.__library.New(
+            self.__connection_string.encode("utf-8"),
+            self.stream_name.encode("utf-8"),
+        )
+        self.__connect = self.__library.Publisher
         self.__connect.argtypes = [
+            ctypes.c_int,  # pointer to stream handler
             ctypes.c_char_p,  # connectionString
             ctypes.c_char_p,  # streamName
         ]
         self.__publish = self.__library.Publish
         self.__publish.argtypes = [
+            ctypes.c_int,  # pointer to stream handler
             ctypes.c_char_p,  # event
             ctypes.c_char_p,  # identifier
             ctypes.c_char_p,  # eventType
             ctypes.c_char_p,  # meta
         ]
         self.__close = self.__library.Close
+        self.__close.argtypes = [ctypes.c_int]  # pointer to stream handler
 
     def __enter__(self):
         """Connect to the server."""
@@ -96,6 +107,7 @@ class Publisher:
         """Start the connection to the server."""
         if not self.__connected:
             success = self.__connect(
+                self.__handler,
                 self.__connection_string.encode("utf-8"),
                 self.stream_name.encode("utf-8"),
             )
@@ -112,6 +124,7 @@ class Publisher:
             testrun_id,
         )
         return self.__publish(
+            self.__handler,
             event.model_dump_json().encode("utf-8"),
             testrun_id.encode("utf-8"),
             event.event.lower().encode("utf-8"),
@@ -125,5 +138,5 @@ class Publisher:
     def close(self):
         """Close the connection to the server."""
         if self.__connected:
-            self.__close()
+            self.__close(self.__handler)
             self.__connected = False

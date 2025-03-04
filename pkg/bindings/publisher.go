@@ -15,27 +15,70 @@
 // limitations under the License.
 package bindings
 
+/*
+#include <stdlib.h>
+#include <stdint.h>
+*/
+import "C"
+
 import (
-	"C"
 	"log/slog"
 	"os"
+	"runtime/cgo"
 
 	"github.com/eiffel-community/etos-library/pkg/stream"
 )
 
-var (
-	Streamer  stream.Streamer
-	Publisher stream.Publisher
-	Consumer  stream.Consumer
-)
-var logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
-
-// Connect to the stream.
+// StreamHandler is a struct that holds the logger, connection string, stream name, streamer,
+// publisher, and consumer.
+// It is used to create a new publisher and publish messages to a stream from python.
+// For using the streamers in Go code please refer to pkg/stream/stream.go.
 //
-//export Connect
-func Connect(connectionString, streamName *C.char) bool {
-	if err := setupPublisher(C.GoString(connectionString), C.GoString(streamName)); err != nil {
-		logger.Error("Failed to setup publisher", slog.Any("Error", err))
+// For usage examples view the python code in src/etos_lib/messaging/publisher.py.
+type StreamHandler struct {
+	logger           *slog.Logger
+	connectionString string
+	streamName       string
+	streamer         stream.Streamer
+	publisher        stream.Publisher
+	consumer         stream.Consumer
+}
+
+// New creates a new publisher and returns a pointer to it.
+//
+//export New
+func New(connectionString, streamName *C.char) (C.uintptr_t, bool) {
+	logger := newLogger()
+	addresses := []string{C.GoString(connectionString)}
+	streamer, err := stream.NewRabbitMQStreamer(C.GoString(streamName), addresses, logger)
+	if err != nil {
+		return C.uintptr_t(0), false
+	}
+	return C.uintptr_t(cgo.NewHandle(&StreamHandler{
+		logger:   logger,
+		streamer: streamer,
+	})), true
+}
+
+// Publisher creates a new publisher and starts it.
+//
+//export Publisher
+func Publisher(p C.uintptr_t, name *C.char) bool {
+	h := cgo.Handle(p)
+	handler, ok := h.Value().(*StreamHandler)
+	if !ok {
+		// Creating a new logger here since if handler is nil, we don't have access to one.
+		newLogger().Error("Failed to get stream handler from memory")
+		return false
+	}
+	publisher, err := handler.streamer.Publisher(C.GoString(name))
+	if err != nil {
+		handler.logger.Error("Failed to create publisher", slog.Any("Error", err))
+		return false
+	}
+	handler.publisher = publisher
+	if err = publisher.Start(); err != nil {
+		handler.logger.Error("Failed to start publisher", slog.Any("Error", err))
 		return false
 	}
 	return true
@@ -44,55 +87,50 @@ func Connect(connectionString, streamName *C.char) bool {
 // Publish a message to the stream.
 //
 //export Publish
-func Publish(event, identifier, eventType, meta *C.char) bool {
+func Publish(p C.uintptr_t, event, identifier, eventType, meta *C.char) bool {
+	h := cgo.Handle(p)
+	handler, ok := h.Value().(*StreamHandler)
+	if !ok {
+		// Creating a new logger here since if handler is nil, we don't have access to one.
+		newLogger().Error("Failed to get stream handler from memory")
+		return false
+	}
 	message := C.GoString(event)
 	filter := stream.Filter{
 		Identifier: C.GoString(identifier),
 		Type:       C.GoString(eventType),
 		Meta:       C.GoString(meta),
 	}
-	Publisher.Publish([]byte(message), filter)
+	handler.publisher.Publish([]byte(message), filter)
 	return true
 }
 
-// Close any active publisher, streamer and consumer.
+// Close closes the publisher and the streamer.
 //
 //export Close
-func Close() {
-	if Publisher != nil {
-		Publisher.Close()
+func Close(p C.uintptr_t) bool {
+	h := cgo.Handle(p)
+	// Delete the handle here, since it shall not be reused after close.
+	defer h.Delete()
+	handler, ok := h.Value().(*StreamHandler)
+	if !ok {
+		// Creating a new logger here since if handler is nil, we don't have access to one.
+		newLogger().Error("Failed to get stream handler from memory")
+		return false
 	}
-	if Streamer != nil {
-		Streamer.Close()
+	if handler.publisher != nil {
+		handler.publisher.Close()
 	}
-	if Consumer != nil {
-		Consumer.Close()
+	if handler.consumer != nil {
+		handler.consumer.Close()
 	}
+	if handler.streamer != nil {
+		handler.streamer.Close()
+	}
+	return true
 }
 
-// setupPublisher sets up a publisher for the stream.
-func setupPublisher(connectionString, streamName string) error {
-	var err error
-	if Streamer == nil {
-		if err = setupStreamer(connectionString, streamName); err != nil {
-			return err
-		}
-	}
-	// TODO: This name
-	Publisher, err = Streamer.Publisher("publisher-1")
-	if err != nil {
-		return err
-	}
-	if err = Publisher.Start(); err != nil {
-		return err
-	}
-	return nil
-}
-
-// setupStreamer sets up a streamer for the stream.
-func setupStreamer(connectionString, streamName string) error {
-	var err error
-	addresses := []string{connectionString}
-	Streamer, err = stream.NewRabbitMQStreamer(streamName, addresses, logger)
-	return err
+// newLogger creates a new logger.
+func newLogger() *slog.Logger {
+	return slog.New(slog.NewTextHandler(os.Stdout, nil))
 }
