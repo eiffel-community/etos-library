@@ -22,7 +22,6 @@ dependencies = [
     "kubernetes~=26.1",
     "pydantic~=2.10",
     "pyyaml~=6.0",
-    "rstream~=0.20",
     "opentelemetry-api~=1.21",
     "opentelemetry-sdk~=1.21",
     "opentelemetry-exporter-otlp~=1.21",
