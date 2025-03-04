@@ -18,6 +18,7 @@
 import json
 import logging
 from etos_lib.messaging.publisher import Publisher
+from etos_lib.messaging.v2alpha.publisher import Publisher as V2alphaPublisher
 from etos_lib.messaging.events import Log, Message
 
 
@@ -50,19 +51,25 @@ class MessagebusHandler(logging.StreamHandler):
         """
         if self.closing:
             return
-        # This feels volatile, but is necessary to avoid infinite recursion and
-        # still have access to the actual log prints.
-        # Maybe we should add this check to the record instead, but that would require
-        # us to change the logging calls in the code.
-        if record.name == "etos_lib.messaging.publisher":
+        try:
+            send = record.user_log
+        except AttributeError:
+            # If it's the v2alpha protocol, always set to True unless explicitly
+            # disabled with `user_log=False`.
+            send = isinstance(self.publisher, V2alphaPublisher)
+        if not send:
             return
 
         msg = self.format(record)
         if not isinstance(msg, dict):
             msg = json.loads(msg)
+
         try:
             identifier = record.identifier
         except AttributeError:
             identifier = msg.get("identifier")
-        if self.publisher.is_alive() and identifier is not None and identifier != "Unknown":
+        if identifier is None or identifier == "Unknown":
+            return
+
+        if self.publisher.is_alive():
             self.publisher.publish(identifier, Message(data=Log(**msg)))

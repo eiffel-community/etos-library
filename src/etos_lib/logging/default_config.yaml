@@ -3,3 +3,5 @@ logging:
     loglevel: INFO
   file:
     loglevel: DEBUG
+  messagebus:
+    version: v1

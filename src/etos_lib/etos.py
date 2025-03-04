@@ -17,6 +17,8 @@
 
 import time
 from etos_lib.messaging.publisher import Publisher
+from etos_lib.messaging.v1.publisher import Publisher as V1Publisher
+from etos_lib.messaging.v2alpha.publisher import Publisher as V2alphaPublisher
 from .eiffel.publisher import TracingRabbitMQPublisher as RabbitMQPublisher
 from .eiffel.subscriber import TracingRabbitMQSubscriber as RabbitMQSubscriber
 from .graphql.query_handler import GraphQLQueryHandler
@@ -81,17 +83,25 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
             self.subscriber.start()
         self.config.set("subscriber", self.subscriber)
 
-    def messagebus_publisher(self) -> Publisher:
-        """Start the internal messagebus publisher using config data from ETOS library."""
+    def messagebus_publisher(self, version: str = "v1") -> Publisher:
+        """Start the internal messagebus publisher using config data from ETOS library.
+
+        :param version: Version of the messagebus protocol to use.
+        """
         publisher = self.config.get("internal_publisher")
         if publisher is None:
             connection_parameters = self.config.etos_rabbitmq_publisher_data()
             if not connection_parameters:
                 raise PublisherConfigurationMissing
-            publisher = Publisher(
-                self.config.etos_rabbitmq_publisher_uri(),
-                self.config.etos_stream_name(),
-            )
+            if version == "v1":
+                publisher = V1Publisher(**connection_parameters)
+            elif version == "v2alpha":
+                publisher = V2alphaPublisher(
+                    self.config.etos_rabbitmq_publisher_uri(),
+                    self.config.etos_stream_name(),
+                )
+            else:
+                raise ValueError(f"Unknown version {version!r} of messagebus")
             if not self.debug.disable_sending_events:
                 publisher.start()
                 # Wait for start.

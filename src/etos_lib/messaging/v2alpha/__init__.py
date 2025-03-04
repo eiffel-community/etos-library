@@ -13,26 +13,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""ETOS publisher interface."""
-
-from .events import Event
-
-
-class Publisher:
-    """Publisher interface for ETOS."""
-
-    def publish(self, testrun_id: str, event: Event):
-        """Publish an event to the internal messagebus."""
-        raise NotImplementedError
-
-    def start(self):
-        """Start the connection to the server."""
-        raise NotImplementedError
-
-    def close(self):
-        """Close the connection to the server."""
-        raise NotImplementedError
-
-    def is_alive(self):
-        """Check if the connection is alive."""
-        raise NotImplementedError
+"""ETOS internal event publisher."""
