@@ -23,7 +23,11 @@ from ..events import Event
 from ..publisher import Publisher as PublisherInterface
 
 
-LIBRARY_PATH = Path(os.getenv("BINDINGS", Path(__file__).parent)).joinpath("stream/client.so")
+# This package: etos_lib/messaging/v2alpha/publisher.py
+# Root directory: etos_lib/
+# Path: ../../
+ROOT = Path(__file__).parent.parent.parent.joinpath("bindings")
+LIBRARY_PATH = Path(os.getenv("BINDINGS", ROOT)).joinpath("stream/client.so")
 
 
 class Publisher(PublisherInterface):

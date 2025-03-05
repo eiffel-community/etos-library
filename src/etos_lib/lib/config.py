@@ -101,12 +101,14 @@ class Config:
     def etos_rabbitmq_publisher_uri(self):
         """Get RabbitMQ URI for the ETOS rabbitmq service."""
         data = self.etos_rabbitmq_publisher_data()
+        port = os.getenv("ETOS_RABBITMQ_STREAM_PORT", os.getenv("ETOS_RABBITMQ_PORT", "5672"))
+
         if data.get("username") is not None and data.get("password") is None:
-            netloc = f"{data.get('username')}@{data.get('host')}:{data.get('port')}"
+            netloc = f"{data.get('username')}@{data.get('host')}:{port}"
         elif data.get("username") is not None and data.get("password") is not None:
-            netloc = f"{data.get('username')}:{data.get('password')}@{data.get('host')}:{data.get('port')}"
+            netloc = f"{data.get('username')}:{data.get('password')}@{data.get('host')}:{port}"
         else:
-            netloc = f"{data.get('host')}:{data.get('port')}"
+            netloc = f"{data.get('host')}:{port}"
         vhost = quote_plus(data.get("vhost", "/") or "/")
         return f"rabbitmq-stream://{netloc}/{vhost}"
 
