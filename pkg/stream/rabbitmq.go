@@ -48,10 +48,10 @@ type RabbitMQStreamer struct {
 // NewRabbitMQStreamer creates a new RabbitMQ streamer. Only a single connection should be created.
 func NewRabbitMQStreamer(
 	streamName string,
-	addresses []string,
+	address string,
 	logger *slog.Logger,
 ) (Streamer, error) {
-	options := stream.NewEnvironmentOptions().SetMaxProducersPerClient(1).SetUris(addresses)
+	options := stream.NewEnvironmentOptions().SetMaxProducersPerClient(1).SetUri(address)
 	env, err := stream.NewEnvironment(options)
 	if err != nil {
 		return nil, err

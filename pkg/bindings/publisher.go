@@ -49,8 +49,7 @@ type StreamHandler struct {
 //export New
 func New(connectionString, streamName *C.char) (C.uintptr_t, bool) {
 	logger := newLogger()
-	addresses := []string{C.GoString(connectionString)}
-	streamer, err := stream.NewRabbitMQStreamer(C.GoString(streamName), addresses, logger)
+	streamer, err := stream.NewRabbitMQStreamer(C.GoString(streamName), C.GoString(connectionString), logger)
 	if err != nil {
 		return C.uintptr_t(0), false
 	}

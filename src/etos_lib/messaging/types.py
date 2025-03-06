@@ -14,8 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Types used by events but are not events themselves."""
+
+from datetime import datetime
+from typing import Optional
 from typing_extensions import Annotated
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import AliasChoices, BaseModel, Field, StringConstraints
 
 
 class File(BaseModel):
@@ -23,6 +26,7 @@ class File(BaseModel):
 
     url: str
     name: str
+    directory: Optional[str] = None
     checksums: dict = {}
 
 
@@ -37,7 +41,9 @@ class Log(BaseModel):
     # an aliased Field.
     # The '@timestamp' key is necessary for logstash, which we support, so we
     # cannot update the formatter that creates the '@timestamp' key.
-    datestring: str = Field("datestring", alias="@timestamp")
+    datestring: datetime = Field(
+        serialization_alias="datestring", validation_alias=AliasChoices("@timestamp", "datestring")
+    )
 
 
 class Result(BaseModel):
