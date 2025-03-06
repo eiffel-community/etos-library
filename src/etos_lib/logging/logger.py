@@ -163,7 +163,7 @@ def setup_internal_messagebus_logging(config: dict, log_filter: EtosFilter) -> N
                 Config().etos_stream_name(),
             )
         else:
-            raise Exception("Unknown version of messagebus")
+            raise ValueError("Unknown version of messagebus")
         Config().set("internal_publisher", publisher)
     if Debug().enable_sending_logs:
         publisher.start()

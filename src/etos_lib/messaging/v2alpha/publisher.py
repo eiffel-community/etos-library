@@ -26,11 +26,11 @@ from ..publisher import Publisher as PublisherInterface
 # This package: etos_lib/messaging/v2alpha/publisher.py
 # Root directory: etos_lib/
 # Path: ../../
-ROOT = Path(__file__).parent.parent.parent.joinpath("bindings")
+ROOT = str(Path(__file__).parent.parent.parent.joinpath("bindings"))
 LIBRARY_PATH = Path(os.getenv("BINDINGS", ROOT)).joinpath("stream/client.so")
 
 
-class Publisher(PublisherInterface):
+class Publisher(PublisherInterface):  # pylint:disable=too-many-instance-attributes
     """Internal messaging publisher for ETOS.
 
     This publisher is running in a shared C library created from
@@ -74,15 +74,15 @@ class Publisher(PublisherInterface):
         """Initialize the Publisher object."""
         self.stream_name = stream_name
         self.__connection_string = connection_string
-        self.__setup_bindings(LIBRARY_PATH)
-
-    def __setup_bindings(self, library_path: Path):
-        """Setup the bindings for the Publisher."""
-        self.__library = ctypes.cdll.LoadLibrary(str(library_path))
         self.__handler = self.__library.New(
             self.__connection_string.encode("utf-8"),
             self.stream_name.encode("utf-8"),
         )
+        self.__setup_bindings(LIBRARY_PATH)
+
+    def __setup_bindings(self, library_path: Path):
+        """Set up the bindings for the Publisher."""
+        self.__library = ctypes.cdll.LoadLibrary(str(library_path))
         self.__connect = self.__library.Publisher
         self.__connect.argtypes = [
             ctypes.c_int,  # pointer to stream handler
@@ -122,7 +122,7 @@ class Publisher(PublisherInterface):
                 self.stream_name.encode("utf-8"),
             )
             if not success:
-                raise Exception("Failed to connect to stream")
+                raise ConnectionError("Failed to connect to stream")
             self.__connected = True
 
     def publish(self, testrun_id: str, event: Event):
