@@ -27,7 +27,7 @@ from ..publisher import Publisher as PublisherInterface
 # Root directory: etos_lib/
 # Path: ../../
 ROOT = str(Path(__file__).parent.parent.parent.joinpath("bindings"))
-LIBRARY_PATH = Path(os.getenv("BINDINGS", ROOT)).joinpath("stream/client.so")
+LIBRARY_PATH = Path(os.getenv("BINDINGS", ROOT)).joinpath("messaging/client.so")
 
 
 class Publisher(PublisherInterface):  # pylint:disable=too-many-instance-attributes
@@ -74,11 +74,11 @@ class Publisher(PublisherInterface):  # pylint:disable=too-many-instance-attribu
         """Initialize the Publisher object."""
         self.stream_name = stream_name
         self.__connection_string = connection_string
+        self.__setup_bindings(LIBRARY_PATH)
         self.__handler = self.__library.New(
             self.__connection_string.encode("utf-8"),
             self.stream_name.encode("utf-8"),
         )
-        self.__setup_bindings(LIBRARY_PATH)
 
     def __setup_bindings(self, library_path: Path):
         """Set up the bindings for the Publisher."""
@@ -152,3 +152,7 @@ class Publisher(PublisherInterface):  # pylint:disable=too-many-instance-attribu
             self.__close(self.__handler)
             self.__connected = False
             self.__handler = None
+
+
+if __name__ == "__main__":
+    PUBLISHER = Publisher("amqp://kalle", "kula")

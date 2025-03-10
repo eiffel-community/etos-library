@@ -18,10 +18,10 @@ package main
 import (
 	"C"
 
-	// This import will make sure that we build the bindings on make build
+	// This import will make sure that we build the bindings on make build.
 	_ "github.com/eiffel-community/etos-library/pkg/bindings"
 )
 
-// main is required for cgo to work
+// main is required for cgo to work.
 func main() {
 }
