@@ -61,4 +61,5 @@ $(BUILD_PYTHON): $(VIRTUALENV)
 
 $(VIRTUALENV):
 	mkdir -p $(dir $@)
+	pip install virtualenv
 	python -m virtualenv $(VENVDIR)
