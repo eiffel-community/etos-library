@@ -4,7 +4,7 @@ export VENVDIR := $(CURDIR)/.buildenv
 export BINDINGS := $(CURDIR)/src/etos_lib/bindings
 export BUILD_MESSAGING := go build --buildmode=c-shared -o $(BINDINGS)/messaging/client.so ./cmd/messaging/main.go
 
-BUILD_PYTHON = python -m build
+BUILD_PYTHON = -m build
 VIRTUALENV = $(VENVDIR)/bin/python
 GOLANGCI_LINT = $(GOBIN)/golangci-lint
 GOLANGCI_LINT_VERSION = v1.64.6
@@ -47,7 +47,7 @@ build-bindings:
 
 .PHONY: build-python
 build-python: $(BUILD_PYTHON)
-	$(BUILD_PYTHON)
+	$(VIRTUALENV) $(BUILD_PYTHON)
 
 $(GOLANGCI_LINT):
 	mkdir -p $(dir $@)
