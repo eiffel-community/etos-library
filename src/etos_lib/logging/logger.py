@@ -221,9 +221,10 @@ def setup_logging(
     root_logger.setLevel(logging.DEBUG)
     root_logger.propagate = 0
 
-    # The gql transport requests logger is incredibly spammy so we need
+    # The gql transport loggers are incredibly spammy so we need
     # to supress some of it so that our logs are actually useful.
     logging.getLogger("gql.transport.requests").setLevel(logging.WARNING)
+    logging.getLogger("gql.transport.aiohttp").setLevel(logging.WARNING)
 
     if logging_config.get("stream"):
         setup_stream_logging(logging_config.get("stream"), log_filter)
