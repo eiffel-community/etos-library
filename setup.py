@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """Setup file for etos_lib."""
+
+from distutils.errors import CompileError
+from subprocess import call
 from setuptools import setup
+from setuptools.command.build_ext import build_ext
 from setuptools_scm.version import get_local_dirty_tag
 
 
@@ -38,5 +42,21 @@ def local_scheme(version) -> str:
     return f"+{version.node}"
 
 
+class BuildGoBindings(build_ext):
+    """Custom command to build the go bindings in this repository."""
+
+    def build_extension(self, ext):
+        """Build the go extension."""
+        raise CompileError("Testing")
+        cmd = ["make", "build"]
+        out = call(cmd)
+        if out != 0:
+            raise CompileError("Go build failed")
+
+
 if __name__ == "__main__":
-    setup(use_scm_version={"local_scheme": local_scheme, "version_scheme": version_scheme})
+    setup(
+        use_scm_version={"local_scheme": local_scheme, "version_scheme": version_scheme},
+        cmdclass={"build_ext": BuildGoBindings},
+        zip_safe=False,
+    )
