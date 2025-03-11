@@ -28,6 +28,7 @@ Example::
     >>> [2020-12-16 10:35:00][cb7c8cd9-40a6-4ecc-8321-a1eae6beae35] INFO: Hello!
 
 """
+
 import atexit
 import logging
 import logging.config
@@ -128,6 +129,7 @@ def setup_stream_logging(config: dict, log_filter: EtosFilter) -> None:
     stream_handler.setFormatter(logging.Formatter(logformat, datefmt=dateformat))
     stream_handler.setLevel(loglevel)
     stream_handler.addFilter(log_filter)
+
     root_logger.addHandler(stream_handler)
 
 
@@ -218,6 +220,10 @@ def setup_logging(
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
     root_logger.propagate = 0
+
+    # The gql transport requests logger is incredibly spammy so we need
+    # to supress some of it so that our logs are actually useful.
+    logging.getLogger("gql.transport.requests").setLevel(logging.WARNING)
 
     if logging_config.get("stream"):
         setup_stream_logging(logging_config.get("stream"), log_filter)
