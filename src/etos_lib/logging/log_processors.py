@@ -21,7 +21,7 @@ from opentelemetry.sdk._logs import LogData, LogRecordProcessor
 class ToStringProcessor(LogRecordProcessor):
     """Simple log record processor to convert all log records to type string."""
 
-    def emit(self, log_data: LogData) -> None:
+    def on_emit(self, log_data: LogData) -> None:
         """Change record body to string and emit the `LogData`."""
         record = log_data.log_record
         if not isinstance(record.body, (str, bool, int, float)):

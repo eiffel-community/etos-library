@@ -57,3 +57,6 @@ testpaths = ["tests"]
 
 [tool.setuptools.packages]
 find = { where = ["src"], exclude = ["tests"] }
+
+[tool.setuptools_scm]
+root = "."
