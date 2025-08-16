@@ -48,8 +48,10 @@ from etos_lib.lib.debug import Debug
 from etos_lib.logging.filter import EtosFilter
 from etos_lib.logging.formatter import EtosLogFormatter
 from etos_lib.logging.log_processors import ToStringProcessor
-from etos_lib.logging.log_publisher import RabbitMQLogPublisher
-from etos_lib.logging.rabbitmq_handler import RabbitMQHandler
+from etos_lib.logging.messagebus_handler import MessagebusHandler
+from etos_lib.messaging.publisher import Publisher
+from etos_lib.messaging.v1.publisher import Publisher as V1Publisher
+from etos_lib.messaging.v2alpha.publisher import Publisher as V2alphaPublisher
 
 DEFAULT_CONFIG = Path(__file__).parent.joinpath("default_config.yaml")
 DEFAULT_LOG_PATH = Debug().default_log_path
@@ -133,34 +135,47 @@ def setup_stream_logging(config: dict, log_filter: EtosFilter) -> None:
     root_logger.addHandler(stream_handler)
 
 
-def setup_rabbitmq_logging(log_filter: EtosFilter) -> None:
-    """Set up rabbitmq logging.
+def setup_internal_messagebus_logging(config: dict, log_filter: EtosFilter) -> None:
+    """Set up internal messagebus logging.
 
-    :param log_filter: Logfilter to add to stream handler.
+    :param config: Internal logging configuration.
+    :type config: dict
+    :param log_filter: LogFilter to add to stream handler.
     :type log_filter: :obj:`EtosFilter`
     """
     loglevel = logging.DEBUG
 
     root_logger = logging.getLogger()
 
-    # These loggers need to be prevented from propagating their logs
-    # to RabbitMQLogPublisher. If they aren't, this may cause a deadlock.
-    logging.getLogger("pika").propagate = False
-    logging.getLogger("eiffellib.publishers.rabbitmq_publisher").propagate = False
-    logging.getLogger("etos_lib.eiffel.publisher").propagate = False
-    logging.getLogger("base_rabbitmq").propagate = False
-
-    rabbitmq = RabbitMQLogPublisher(**Config().etos_rabbitmq_publisher_data(), routing_key=None)
+    publisher = Config().get("internal_publisher")
+    version = config.get("version", "v1")
+    if publisher is None:
+        if version == "v1":
+            # These loggers need to be prevented from propagating their logs
+            # to V1Publisher. If they aren't, this may cause a deadlock.
+            logging.getLogger("pika").propagate = False
+            logging.getLogger("eiffellib.publishers.rabbitmq_publisher").propagate = False
+            logging.getLogger("etos_lib.eiffel.publisher").propagate = False
+            logging.getLogger("base_rabbitmq").propagate = False
+            publisher = V1Publisher(**Config().etos_rabbitmq_publisher_data())
+        elif version == "v2alpha":
+            publisher = V2alphaPublisher(
+                Config().etos_rabbitmq_publisher_uri(),
+                Config().etos_stream_name(),
+            )
+        else:
+            raise ValueError("Unknown version of messagebus")
+        Config().set("internal_publisher", publisher)
     if Debug().enable_sending_logs:
-        rabbitmq.start()
-        atexit.register(close_rabbit, rabbitmq)
+        publisher.start()
+        atexit.register(close_rabbit, publisher)
 
-    rabbit_handler = RabbitMQHandler(rabbitmq)
-    rabbit_handler.setFormatter(EtosLogFormatter())
-    rabbit_handler.setLevel(loglevel)
-    rabbit_handler.addFilter(log_filter)
+    handler = MessagebusHandler(publisher)
+    handler.setFormatter(EtosLogFormatter())
+    handler.setLevel(loglevel)
+    handler.addFilter(log_filter)
 
-    root_logger.addHandler(rabbit_handler)
+    root_logger.addHandler(handler)
 
 
 def setup_otel_logging(
@@ -230,12 +245,13 @@ def setup_logging(
         setup_stream_logging(logging_config.get("stream"), log_filter)
     if logging_config.get("file"):
         setup_file_logging(logging_config.get("file"), log_filter)
-    setup_rabbitmq_logging(log_filter)
+    setup_internal_messagebus_logging(logging_config.get("messagebus"), log_filter)
     if otel_resource:
         setup_otel_logging(log_filter, otel_resource)
 
 
-def close_rabbit(rabbit: RabbitMQLogPublisher) -> None:
+def close_rabbit(rabbit: Publisher) -> None:
     """Close down a rabbitmq connection."""
-    rabbit.wait_for_unpublished_events()
+    if isinstance(rabbit, V1Publisher):
+        rabbit.wait_for_unpublished_events()
     rabbit.close()

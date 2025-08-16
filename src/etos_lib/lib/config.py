@@ -14,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library config."""
+
 import json
+from urllib.parse import quote_plus
 from pprint import pprint
 import os
 
@@ -91,6 +93,24 @@ class Config:
             "vhost": os.getenv("ETOS_RABBITMQ_VHOST", None),
             "ssl": ssl,
         }
+
+    def etos_stream_name(self):
+        """Get the stream name for the ETOS rabbitmq service."""
+        return os.getenv("ETOS_STREAM_NAME", "etos")
+
+    def etos_rabbitmq_publisher_uri(self):
+        """Get RabbitMQ URI for the ETOS rabbitmq service."""
+        data = self.etos_rabbitmq_publisher_data()
+        port = os.getenv("ETOS_RABBITMQ_STREAM_PORT", os.getenv("ETOS_RABBITMQ_PORT", "5672"))
+
+        if data.get("username") is not None and data.get("password") is None:
+            netloc = f"{data.get('username')}@{data.get('host')}:{port}"
+        elif data.get("username") is not None and data.get("password") is not None:
+            netloc = f"{data.get('username')}:{data.get('password')}@{data.get('host')}:{port}"
+        else:
+            netloc = f"{data.get('host')}:{port}"
+        vhost = quote_plus(data.get("vhost", "/") or "/")
+        return f"rabbitmq-stream://{netloc}/{vhost}"
 
     def rabbitmq_from_environment(self):
         """Load RabbitMQ data from environment variables."""

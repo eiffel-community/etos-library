@@ -14,15 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS rabbitmq log publisher."""
+
 import time
 import json
 import pika
 
 from eiffellib.publishers import RabbitMQPublisher
 
+from ..events import Event
+from ..publisher import Publisher as PublisherInterface
 
-class RabbitMQLogPublisher(RabbitMQPublisher):
+
+class Publisher(RabbitMQPublisher, PublisherInterface):
     """A RabbitMQ publisher that can send JSON strings instead of Eiffel events."""
+
+    def publish(self, testrun_id, event: Event):
+        """Publish an event to the internal messagebus."""
+        self.send_event(
+            event=event.model_dump_json(),
+            routing_key=f"{testrun_id}.{event.event.lower()}.{event.meta}",
+        )
 
     def send_event(self, event, block=True, routing_key="#"):
         """Overload the send_event from the eiffellib rabbitmq publisher to send strings.

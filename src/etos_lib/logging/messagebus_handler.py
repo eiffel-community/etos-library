@@ -14,12 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS rabbitmq handler."""
+
 import json
 import logging
+from etos_lib.messaging.publisher import Publisher
+from etos_lib.messaging.v2alpha.publisher import Publisher as V2alphaPublisher
+from etos_lib.messaging.events import Log, Message
 
 
-class RabbitMQHandler(logging.StreamHandler):
-    """A RabbitMQ log handler that sends logs tagged with user_log to RabbitMQ.
+class MessagebusHandler(logging.StreamHandler):
+    """A log handler that sends logs tagged with user_log to the internal messagebus.
 
     Example::
 
@@ -35,34 +39,37 @@ class RabbitMQHandler(logging.StreamHandler):
 
     closing = False
 
-    def __init__(self, rabbitmq):
+    def __init__(self, publisher: Publisher):
         """Initialize."""
         super().__init__()
-        self.rabbitmq = rabbitmq
+        self.publisher = publisher
 
-    def emit(self, record):
-        """Send user log to RabbitMQ, starting the connection if necessary.
+    def emit(self, record: logging.LogRecord):
+        """Send user log to messagebus.
 
-        The record parameter "user_log" must be set to True if a message shall be
-        sent to RabbitMQ.
+        The record parameter "user_log" must be set to True if a message shall be sent.
         """
         if self.closing:
             return
-
         try:
             send = record.user_log
         except AttributeError:
-            send = False
+            # If it's the v2alpha protocol, always set to True unless explicitly
+            # disabled with `user_log=False`.
+            send = isinstance(self.publisher, V2alphaPublisher)
+        if not send:
+            return
 
         msg = self.format(record)
+        if not isinstance(msg, dict):
+            msg = json.loads(msg)
+
         try:
             identifier = record.identifier
         except AttributeError:
-            identifier = json.loads(msg).get("identifier", "Unknown")
-        # An unknown identifier will never be picked up by user log handler
-        # so it is unnecessary to send it.
-        routing_key = f"{identifier}.log.{record.levelname}"
-        if send and self.rabbitmq.is_alive():
-            if identifier == "Unknown":
-                raise ValueError("Trying to send a user log when identifier is not set")
-            self.rabbitmq.send_event(msg, routing_key=routing_key)
+            identifier = msg.get("identifier")
+        if identifier is None or identifier == "Unknown":
+            return
+
+        if self.publisher.is_alive():
+            self.publisher.publish(identifier, Message(data=Log(**msg)))
