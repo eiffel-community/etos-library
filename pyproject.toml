@@ -7,14 +7,14 @@ name = "etos_lib"
 dynamic = ["version"]
 description = "ETOS Library"
 authors = [{name = "Tobias Persson", email = "tobias.persson@axis.com"}]
-license = { file = "LICENSE.txt" }
+license-files = ["LICENSE.txt"]
 readme = "README.rst"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License"
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "gql[requests]~=3.4",
     "eiffellib[rabbitmq]~=2.4",
