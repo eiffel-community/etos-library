@@ -22,9 +22,10 @@ class ToStringProcessor(LogRecordProcessor):
     """Simple log record processor to convert all log records to type string."""
 
     def on_emit(self, log_record: ReadWriteLogRecord) -> None:
-        """Change record body to string and emit the `ReadWriteLogRecord`."""
-        if not isinstance(log_record.body, (str, bool, int, float)):
-            log_record.body = str(log_record.body)
+        """Change record body to string and emit the log record."""
+        record = log_record.log_record
+        if not isinstance(record.body, (str, bool, int, float)):
+            record.body = str(record.body)
 
     def force_flush(self, _timeout_millis: int = 30000) -> bool:
         """Export all the received, but not yet exported, logs to the configured Exporter."""
