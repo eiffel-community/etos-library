@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """TestRun custom resource manager ETOS."""
+
 from .etos import Kubernetes, Resource
 
 

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library HTTP Client."""
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library module."""
+
 from .eiffel.publisher import TracingRabbitMQPublisher as RabbitMQPublisher
 from .eiffel.subscriber import TracingRabbitMQSubscriber as RabbitMQSubscriber
 from .graphql.query_handler import GraphQLQueryHandler

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Kubernetes schemas."""
+
 from .common import Metadata
 from .environment import *
 from .environment_request import *

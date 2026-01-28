@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library GraphQL query handler module."""
+
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 from etos_lib.lib.utils import Utils

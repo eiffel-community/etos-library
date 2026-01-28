@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS Library event helper module."""
+
 from eiffellib.events import EiffelActivityTriggeredEvent
 from eiffellib.events import EiffelActivityStartedEvent
 from eiffellib.events import EiffelActivityFinishedEvent
