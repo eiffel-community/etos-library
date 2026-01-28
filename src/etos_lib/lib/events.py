@@ -15,22 +15,26 @@
 # limitations under the License.
 """ETOS Library event helper module."""
 
-from eiffellib.events import EiffelActivityTriggeredEvent
-from eiffellib.events import EiffelActivityStartedEvent
-from eiffellib.events import EiffelActivityFinishedEvent
-from eiffellib.events import EiffelActivityCanceledEvent
-from eiffellib.events import EiffelAnnouncementPublishedEvent
-from eiffellib.events import EiffelConfidenceLevelModifiedEvent
-from eiffellib.events import EiffelEnvironmentDefinedEvent
-from eiffellib.events import EiffelTestSuiteStartedEvent
-from eiffellib.events import EiffelTestSuiteFinishedEvent
-from eiffellib.events import EiffelTestExecutionRecipeCollectionCreatedEvent
-from eiffellib.events import EiffelTestCaseTriggeredEvent
-from eiffellib.events import EiffelTestCaseStartedEvent
-from eiffellib.events import EiffelTestCaseFinishedEvent
-from eiffellib.events import EiffelArtifactCreatedEvent
-from eiffellib.events import EiffelArtifactPublishedEvent
-from eiffellib.events import EiffelCompositionDefinedEvent
+from eiffellib.events import (
+    EiffelActivityCanceledEvent,
+    EiffelActivityFinishedEvent,
+    EiffelActivityStartedEvent,
+    EiffelActivityTriggeredEvent,
+    EiffelAnnouncementPublishedEvent,
+    EiffelArtifactCreatedEvent,
+    EiffelArtifactPublishedEvent,
+    EiffelCompositionDefinedEvent,
+    EiffelConfidenceLevelModifiedEvent,
+    EiffelEnvironmentDefinedEvent,
+    EiffelTestCaseFinishedEvent,
+    EiffelTestCaseStartedEvent,
+    EiffelTestCaseTriggeredEvent,
+    EiffelTestExecutionRecipeCollectionCreatedEvent,
+    EiffelTestSuiteFinishedEvent,
+    EiffelTestSuiteStartedEvent,
+)
+from opentelemetry import context
+
 from .debug import Debug
 
 
@@ -46,7 +50,7 @@ class Events:
         """Delete reference to eiffel publisher."""
         self.publisher = None
 
-    def send(self, event, links, data):
+    def send(self, event, links, data, ctx: context.Context | None = None):
         """Build an event and send it with an eiffel publisher.
 
         :param event: Initialized event to send.
@@ -55,6 +59,8 @@ class Events:
         :type links: dict
         :param data: Dictionary of data to add to event.
         :type data: dict
+        :param ctx: Context to use for tracing.
+        :type ctx: :obj:`opentelemetry.context.Context` or None
         :return: The event that was created with data and links added.
         :rtype: :obj:`eiffel.events.base_event.BaseEvent`
         """
@@ -70,7 +76,7 @@ class Events:
         self.debug.events_published.append(event)
         event.tag = self.debug.routing_key_tag
         if not self.debug.disable_sending_events:
-            self.publisher.send_event(event)
+            self.publisher.send_event(event, context=ctx)
         return event
 
     def send_activity_triggered(self, name, links=None, **optional):
