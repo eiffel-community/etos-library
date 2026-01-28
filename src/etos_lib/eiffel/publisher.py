@@ -22,7 +22,7 @@ from threading import current_thread
 
 from eiffellib.events.eiffel_base_event import EiffelBaseEvent
 from eiffellib.publishers.rabbitmq_publisher import RabbitMQPublisher
-from opentelemetry import propagate, trace
+from opentelemetry import context, propagate, trace
 from opentelemetry.semconv.trace import MessagingOperationValues
 from opentelemetry.trace import SpanKind
 from pika.spec import BasicProperties
@@ -49,7 +49,12 @@ class TracingRabbitMQPublisher(RabbitMQPublisher):
         )
         self.destination = f"{self.parameters.host},{self.parameters.virtual_host},{self.exchange}"
 
-    def send_event(self, event: EiffelBaseEvent, block: bool = True) -> None:
+    def send_event(
+        self,
+        event: EiffelBaseEvent,
+        block: bool = True,
+        ctx: context.Context | None = None,
+    ) -> None:
         """Validate and send an eiffel event to the rabbitmq server.
 
         This method will set the source on all events if there is a source
@@ -72,9 +77,14 @@ class TracingRabbitMQPublisher(RabbitMQPublisher):
             self.wait_start()
             while self._channel is None or not self._channel.is_open:
                 time.sleep(0.1)
+        if ctx is None:
+            ctx = context.get_current()
 
         properties = BasicProperties(
-            content_type="application/json", delivery_mode=2, headers={}, type=self.destination
+            content_type="application/json",
+            delivery_mode=2,
+            headers={},
+            type=self.destination,
         )
 
         source = deepcopy(self.source)
@@ -95,6 +105,7 @@ class TracingRabbitMQPublisher(RabbitMQPublisher):
         span = self.tracer.start_span(
             name=task_name,
             kind=SpanKind.PRODUCER,
+            context=ctx,
         )
         if span.is_recording():
             add_span_attributes(
@@ -110,7 +121,7 @@ class TracingRabbitMQPublisher(RabbitMQPublisher):
         # Pylint is wrong.. pylint:disable=not-context-manager
         with self._lock, trace.use_span(span, end_on_exit=True) as _span:
             _LOG.debug("[%s] 'send_event' Lock acquired", current_thread().name)
-            propagate.inject(properties.headers)
+            propagate.inject(properties.headers, context=ctx)
             if properties.headers == {}:  # Tracing is not enabled?
                 properties.headers = None
             try:
