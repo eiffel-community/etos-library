@@ -194,7 +194,9 @@ class Events:
             and optional.get("host") is None
             and optional.get("uri") is None
         ):
-            raise ValueError("At least one of 'host', 'image' or 'uri' must be provided")
+            raise ValueError(
+                "At least one of 'host', 'image' or 'uri' must be provided"
+            )
         links = links if links is not None else {}
         data = {"name": name}
         data.update(**optional)
@@ -242,6 +244,7 @@ class Events:
         data = optional
         return self.send(EiffelTestSuiteFinishedEvent(), links, data, ctx)
 
+    # pylint:disable=too-many-arguments,too-many-positional-arguments
     def send_announcement_published(
         self,
         heading,
@@ -294,11 +297,15 @@ class Events:
         :type optional: dict
         """
         if optional.get("batches") is None and optional.get("batchesUri") is None:
-            raise ValueError("At least one of 'batches' or 'batchesUri' must be provided")
+            raise ValueError(
+                "At least one of 'batches' or 'batchesUri' must be provided"
+            )
         links = links if links is not None else {}
         data = {"selectionStrategy": selection_strategy}
         data.update(**optional)
-        return self.send(EiffelTestExecutionRecipeCollectionCreatedEvent(), links, data, ctx)
+        return self.send(
+            EiffelTestExecutionRecipeCollectionCreatedEvent(), links, data, ctx
+        )
 
     def send_confidence_level_modified(
         self, name, value, links=None, ctx: context.Context | None = None, **optional
