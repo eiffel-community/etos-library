@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Custom publishers for eiffellib."""
+
 import logging
 import time
 from copy import deepcopy

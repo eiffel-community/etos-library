@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Custom subscribers for eiffellib."""
+
 import functools
 import json
 import logging

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Kubernetes client for ETOS custom resources."""
+
 import os
 import logging
 from pathlib import Path

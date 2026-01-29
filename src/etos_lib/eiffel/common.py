@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common functions for the eiffel helpers."""
+
 from collections.abc import MutableMapping, Sequence
 from typing import Iterable, Optional
 

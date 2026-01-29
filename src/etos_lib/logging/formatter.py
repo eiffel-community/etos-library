@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS log formatter."""
+
 import datetime
 import json
 import logging
 import sys
 import traceback
-
 
 # LogRecord fields that we exclude, typically because we offer
 # something better.

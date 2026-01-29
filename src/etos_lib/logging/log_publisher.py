@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ETOS rabbitmq log publisher."""
+
 import time
 import json
 import pika
