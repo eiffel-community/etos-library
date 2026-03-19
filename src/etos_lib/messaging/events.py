@@ -36,7 +36,7 @@ class Event(BaseModel):
         """Return the string representation of an event."""
         return f"{self.event}({self.id}): {self.data}"
 
-    def __eq__(self, other: "Event") -> bool:  # type:ignore
+    def __eq__(self, other: "Event") -> bool:  # type: ignore
         """Check if the event is the same by testing the IDs."""
         if self.id is None or other.id is None:
             return super().__eq__(other)
