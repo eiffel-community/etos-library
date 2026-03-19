@@ -50,6 +50,7 @@ from etos_lib.logging.formatter import EtosLogFormatter
 from etos_lib.logging.log_processors import ToStringProcessor
 from etos_lib.logging.log_publisher import RabbitMQLogPublisher
 from etos_lib.logging.rabbitmq_handler import RabbitMQHandler
+from etos_lib.messaging.publisher import Publisher
 
 DEFAULT_CONFIG = Path(__file__).parent.joinpath("default_config.yaml")
 DEFAULT_LOG_PATH = Debug().default_log_path
@@ -150,12 +151,24 @@ def setup_rabbitmq_logging(log_filter: EtosFilter) -> None:
     logging.getLogger("etos_lib.eiffel.publisher").propagate = False
     logging.getLogger("base_rabbitmq").propagate = False
 
+    # Backwards compatibility
     rabbitmq = RabbitMQLogPublisher(**Config().etos_rabbitmq_publisher_data(), routing_key=None)
     if Debug().enable_sending_logs:
         rabbitmq.start()
         atexit.register(close_rabbit, rabbitmq)
 
-    rabbit_handler = RabbitMQHandler(rabbitmq)
+    config = Config().etos_rabbitmq_stream_publisher_data()
+    if config.get("stream_name") is not None:
+        messagebus = Config().get("messagebus")
+        if messagebus is None:
+            messagebus = Publisher(**config)
+            Config().set("messagebus", messagebus)
+    messagebus = Config().get("messagebus")
+    if messagebus is not None and Debug().enable_sending_logs:
+        messagebus.start()
+        messagebus.wait_start()
+
+    rabbit_handler = RabbitMQHandler(messagebus, rabbitmq)
     rabbit_handler.setFormatter(EtosLogFormatter())
     rabbit_handler.setLevel(loglevel)
     rabbit_handler.addFilter(log_filter)

@@ -17,6 +17,13 @@
 
 import json
 import logging
+from typing import Optional
+
+from etos_lib.messaging.events import Message
+from etos_lib.messaging.publisher import Publisher
+from etos_lib.messaging.types import Log
+
+from .log_publisher import RabbitMQLogPublisher
 
 
 class RabbitMQHandler(logging.StreamHandler):
@@ -36,9 +43,14 @@ class RabbitMQHandler(logging.StreamHandler):
 
     closing = False
 
-    def __init__(self, rabbitmq):
+    def __init__(
+        self,
+        stream: Optional[Publisher] = None,
+        rabbitmq: Optional[RabbitMQLogPublisher] = None,
+    ):
         """Initialize."""
         super().__init__()
+        self.stream = stream
         self.rabbitmq = rabbitmq
 
     def emit(self, record):
@@ -60,10 +72,20 @@ class RabbitMQHandler(logging.StreamHandler):
             identifier = record.identifier
         except AttributeError:
             identifier = json.loads(msg).get("identifier", "Unknown")
+
+        # Backwards compatibility
         # An unknown identifier will never be picked up by user log handler
         # so it is unnecessary to send it.
-        routing_key = f"{identifier}.log.{record.levelname}"
-        if send and self.rabbitmq.is_alive():
+        if self.rabbitmq is not None and send and self.rabbitmq.is_alive():
             if identifier == "Unknown":
                 raise ValueError("Trying to send a user log when identifier is not set")
+
+            routing_key = f"{identifier}.log.{record.levelname}"
             self.rabbitmq.send_event(msg, routing_key=routing_key)
+
+        if self.stream is not None and send and self.stream.is_alive():
+            if identifier == "Unknown":
+                raise ValueError("Trying to send a user log when identifier is not set")
+            if not isinstance(msg, dict):
+                msg = json.loads(msg)
+            self.stream.publish(identifier, Message(data=Log(**msg)))
