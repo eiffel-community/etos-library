@@ -34,10 +34,6 @@ class Publisher(threading.Thread):
 
     logger = logging.getLogger(__name__)
 
-    __shutdown = threading.Event()
-    __closed = threading.Event()
-    __started = threading.Event()
-    __queue: asyncio.Queue = asyncio.Queue()
     __confirmed: int = 0
     __unconfirmed: int = 0
     __parent_thread: threading.Thread
@@ -54,6 +50,10 @@ class Publisher(threading.Thread):
     ):
         """Set up parameters for a rabbitmq stream connection."""
         super().__init__()
+        self.__shutdown = threading.Event()
+        self.__closed = threading.Event()
+        self.__started = threading.Event()
+        self.__queue = asyncio.Queue()
         self.__parameters = {
             "host": host,
             "port": port,
