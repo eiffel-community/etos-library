@@ -17,7 +17,7 @@
 
 import inspect
 import sys
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -27,7 +27,7 @@ from .types import File, Log, Result
 class Event(BaseModel):
     """Base internal messaging event."""
 
-    id: Optional[int] = None
+    id: int | None = None
     event: str = "Unknown"
     data: Any
     meta: str = "*"
