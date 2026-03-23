@@ -16,10 +16,9 @@
 """Types used by events but are not events themselves."""
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, StringConstraints
-from typing_extensions import Annotated
 
 
 class File(BaseModel):
@@ -27,7 +26,7 @@ class File(BaseModel):
 
     url: str
     name: str
-    directory: Optional[str] = None
+    directory: str | None = None
     checksums: dict = {}
 
 
