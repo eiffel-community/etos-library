@@ -27,6 +27,7 @@ from .events import Event
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-instance-attributes
 
 
 class Publisher(threading.Thread):
