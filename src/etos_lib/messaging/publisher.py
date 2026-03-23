@@ -53,6 +53,7 @@ class Publisher(threading.Thread):
         self.__shutdown = threading.Event()
         self.__closed = threading.Event()
         self.__started = threading.Event()
+        self.__lock = threading.Lock()
         self.__queue = asyncio.Queue()
         self.__parameters = {
             "host": host,
@@ -109,7 +110,7 @@ class Publisher(threading.Thread):
         """Consume messages from the queue and publish them until shutdown is requested."""
         self.logger.debug("Consuming forever")
         while True:
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
             if not self.__started.is_set():
                 self.logger.debug("Publisher started")
                 self.__started.set()
@@ -160,7 +161,8 @@ class Publisher(threading.Thread):
         """Publish confirm callback, increments a counter if the message was confirmed."""
         if confirmation.is_confirmed:
             self.logger.debug("Message confirmed: %r", confirmation)
-            self.__confirmed += 1
+            with self.__lock:
+                self.__confirmed += 1
 
     async def __wait_for_unpublished_events(self, timeout: float):
         """Wait for unpublished events to be confirmed until the timeout is reached."""
@@ -185,4 +187,5 @@ class Publisher(threading.Thread):
             },
         )
         self.__queue.put_nowait(amqp_message)
-        self.__unconfirmed = self.__queue.qsize()
+        with self.__lock:
+            self.__unconfirmed += 1
