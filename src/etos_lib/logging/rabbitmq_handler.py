@@ -17,7 +17,6 @@
 
 import json
 import logging
-from typing import Optional
 
 from etos_lib.messaging.events import Message
 from etos_lib.messaging.publisher import Publisher
@@ -45,8 +44,8 @@ class RabbitMQHandler(logging.StreamHandler):
 
     def __init__(
         self,
-        stream: Optional[Publisher] = None,
-        rabbitmq: Optional[RabbitMQLogPublisher] = None,
+        stream: Publisher | None = None,
+        rabbitmq: RabbitMQLogPublisher | None = None,
     ):
         """Initialize."""
         super().__init__()
