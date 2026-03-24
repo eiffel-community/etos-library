@@ -38,6 +38,7 @@ class Publisher(threading.Thread):
     __confirmed: int = 0
     __unconfirmed: int = 0
     __parent_thread: threading.Thread
+    __loop: None | asyncio.AbstractEventLoop = None
 
     def __init__(
         self,
@@ -95,7 +96,9 @@ class Publisher(threading.Thread):
 
     def is_alive(self) -> bool:
         """Check if the publisher is alive, meaning it has not shutdown or closed."""
-        return not self.__closed.is_set() and not self.__shutdown.is_set()
+        return (
+            self.__started.is_set() and not self.__closed.is_set() and not self.__shutdown.is_set()
+        )
 
     def wait_start(self, timeout: float = 60.0):
         """Wait for the publisher to start, meaning it has started consuming messages."""
@@ -113,6 +116,7 @@ class Publisher(threading.Thread):
         while True:
             await asyncio.sleep(0.1)
             if not self.__started.is_set():
+                self.__loop = asyncio.get_running_loop()
                 self.logger.debug("Publisher started")
                 self.__started.set()
             # Main thread died, shut down.
@@ -179,6 +183,8 @@ class Publisher(threading.Thread):
         """Send an event to the publisher, which will be published to RabbitMQ."""
         if not self.is_alive():
             raise RuntimeError("Publisher is not alive")
+        if self.__loop is None:
+            raise RuntimeError("Publisher loop is not running")
         amqp_message = AMQPMessage(
             body=bytes(event.model_dump_json(), encoding="utf-8"),
             application_properties={
@@ -187,6 +193,8 @@ class Publisher(threading.Thread):
                 "meta": event.meta,
             },
         )
-        self.__queue.put_nowait(amqp_message)
+        # Since we are running the publisher in a separate thread, we need to use
+        # run_coroutine_threadsafe to put the message in the queue.
+        asyncio.run_coroutine_threadsafe(self.__queue.put(amqp_message), self.__loop)
         with self.__lock:
             self.__unconfirmed += 1
