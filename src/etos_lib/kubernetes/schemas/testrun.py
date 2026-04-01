@@ -148,6 +148,7 @@ class TestRunSpec(BaseModel):
     providers: Providers
     suites: List[Suite]
     retention: Optional[Retention] = None
+    suiteSource: Optional[str] = None
 
     @classmethod
     def from_tercc(cls, tercc: list[dict], datasets: Union[list[dict], dict]) -> list[Suite]:
