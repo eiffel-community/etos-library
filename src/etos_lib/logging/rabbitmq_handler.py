@@ -82,7 +82,7 @@ class RabbitMQHandler(logging.StreamHandler):
             routing_key = f"{identifier}.log.{record.levelname}"
             self.rabbitmq.send_event(msg, routing_key=routing_key)
 
-        if self.stream is not None and send and self.stream.is_alive():
+        if self.stream is not None and send and self.stream.is_publisher_alive():
             if identifier == "Unknown":
                 raise ValueError("Trying to send a user log when identifier is not set")
             if not isinstance(msg, dict):

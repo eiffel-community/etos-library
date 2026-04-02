@@ -165,7 +165,9 @@ def setup_rabbitmq_logging(log_filter: EtosFilter) -> None:
             Config().set("messagebus", messagebus)
     messagebus = Config().get("messagebus")
     if messagebus is not None and Debug().enable_sending_logs:
-        messagebus.start()
+        # Checks if the thread is alive, not the publisher itself.
+        if not messagebus.is_alive():
+            messagebus.start()
         messagebus.wait_start()
 
     rabbit_handler = RabbitMQHandler(messagebus, rabbitmq)

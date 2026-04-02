@@ -32,7 +32,7 @@ Running tests
 
 To run the tests, you will need to have a running instance of RabbitMQ. You can use Docker to run RabbitMQ locally:
 
-   docker run -it --rm --name rabbitmq -p 5552:5552 -p 5672:5672 -e RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS='-rabbitmq_stream advertised_host localhost' rabbitmq:4.1
+   docker run -d --rm --name rabbitmq -p 5552:5552 -p 5672:5672 -e RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS='-rabbitmq_stream advertised_host localhost' rabbitmq:4.1
 
 And enable the stream plugin with:
 

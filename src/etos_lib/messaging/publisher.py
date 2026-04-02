@@ -94,7 +94,7 @@ class Publisher(threading.Thread):
         if wait:
             self.wait_closed(timeout=60)
 
-    def is_alive(self) -> bool:
+    def is_publisher_alive(self) -> bool:
         """Check if the publisher is alive, meaning it has not shutdown or closed."""
         return (
             self.__started.is_set() and not self.__closed.is_set() and not self.__shutdown.is_set()
@@ -181,7 +181,7 @@ class Publisher(threading.Thread):
 
     def publish(self, testrun_id: str, event: Event):
         """Send an event to the publisher, which will be published to RabbitMQ."""
-        if not self.is_alive():
+        if not self.is_publisher_alive():
             raise RuntimeError("Publisher is not alive")
         if self.__loop is None:
             raise RuntimeError("Publisher loop is not running")

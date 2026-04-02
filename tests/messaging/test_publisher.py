@@ -65,10 +65,10 @@ class PublisherTests(unittest.TestCase):
     def tearDown(self):
         """Close the publisher and consumer after each test."""
         self.logger.info("TearDown: Closing publisher and consumer.")
-        if self.publisher.is_alive():
+        if self.publisher.is_publisher_alive():
             self.publisher.close(wait=True)
             self.publisher.join(timeout=5)
-            if self.publisher.is_alive():
+            if self.publisher.is_publisher_alive():
                 self.fail("Publisher thread did not terminate in tearDown.")
         self.consumer.close()
         self.consumer.join(timeout=5)
@@ -100,7 +100,7 @@ class PublisherTests(unittest.TestCase):
 
     def test_publisher_sends_and_consumer_receives(self):
         """Test that a message published by the Publisher is received by the Consumer."""
-        self.assertTrue(self.publisher.is_alive())
+        self.assertTrue(self.publisher.is_publisher_alive())
 
         testrun_id = "test_run_123"
         event = self._create_sample_event("Hello RabbitMQ Stream!")
@@ -201,7 +201,9 @@ class PublisherTests(unittest.TestCase):
         self.logger.info(
             "Verify that all messages were confirmed before the publisher fully closed."
         )
-        self.assertFalse(self.publisher.is_alive(), "Publisher should not be alive after close.")
+        self.assertFalse(
+            self.publisher.is_publisher_alive(), "Publisher should not be alive after close."
+        )
         self.assertEqual(
             self.publisher._Publisher__confirmed,
             num_messages,
@@ -233,7 +235,7 @@ class PublisherTests(unittest.TestCase):
     def test_publish_when_publisher_not_alive(self):
         """Test that publish raises RuntimeError if publisher is not started."""
         self.logger.info("Stop the publisher to test publish behavior when not alive.")
-        if self.publisher.is_alive():
+        if self.publisher.is_publisher_alive():
             self.publisher.close(wait=True)
             self.publisher.join(timeout=5)
 
