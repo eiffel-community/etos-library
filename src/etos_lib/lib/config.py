@@ -16,8 +16,8 @@
 """ETOS Library config."""
 
 import json
-from pprint import pprint
 import os
+from pprint import pprint
 
 
 class Config:
@@ -89,6 +89,19 @@ class Config:
             "username": os.getenv("ETOS_RABBITMQ_USERNAME", None),
             "password": os.getenv("ETOS_RABBITMQ_PASSWORD", None),
             "port": int(os.getenv("ETOS_RABBITMQ_PORT", "5672")),
+            "vhost": os.getenv("ETOS_RABBITMQ_VHOST", None),
+            "ssl": ssl,
+        }
+
+    def etos_rabbitmq_stream_publisher_data(self):
+        """Get RabbitMQ parameters for the ETOS rabbitmq stream service."""
+        ssl = os.getenv("ETOS_RABBITMQ_SSL", "true") == "true"
+        return {
+            "host": os.getenv("ETOS_RABBITMQ_HOST", "127.0.0.1"),
+            "username": os.getenv("ETOS_RABBITMQ_USERNAME", None),
+            "password": os.getenv("ETOS_RABBITMQ_PASSWORD", None),
+            "port": int(os.getenv("ETOS_RABBITMQ_STREAM_PORT", "5552")),
+            "stream_name": os.getenv("ETOS_RABBITMQ_STREAM_NAME", None),
             "vhost": os.getenv("ETOS_RABBITMQ_VHOST", None),
             "ssl": ssl,
         }

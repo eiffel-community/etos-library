@@ -18,6 +18,7 @@ requires-python = ">=3.10"
 dependencies = [
     "gql[requests]~=3.4",
     "eiffellib[rabbitmq]~=2.4",
+    "rstream~=1.0",
     "requests~=2.31",
     "kubernetes~=26.1",
     "pydantic~=2.1",
@@ -38,6 +39,9 @@ Repository = "https://github.com/eiffel-community/etos-library"
 
 [project.optional-dependencies]
 testing = ["pytest", "pytest-cov"]
+
+[tool.black]
+line-length = 100
 
 [tool.build_sphinx]
 source_dir = "docs"

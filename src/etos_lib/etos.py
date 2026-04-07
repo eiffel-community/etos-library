@@ -30,6 +30,7 @@ from .lib.feature_flags import FeatureFlags
 from .lib.http import Http
 from .lib.monitor import Monitor
 from .lib.utils import Utils
+from .messaging.publisher import Publisher
 
 
 class ETOS:  # pylint: disable=too-many-instance-attributes
@@ -58,6 +59,21 @@ class ETOS:  # pylint: disable=too-many-instance-attributes
         """Delete references to eiffel publisher and subscriber."""
         self.config.set("publisher", None)
         self.config.set("subscriber", None)
+        self.config.set("messagebus", None)
+
+    def messagebus_publisher(self) -> Publisher:
+        """Start the internal messagebus publisher using config data from ETOS library."""
+        messagebus = self.config.get("messagebus")
+        if messagebus is None:
+            config = self.config.etos_rabbitmq_stream_publisher_data()
+            if config.get("stream_name") is None:
+                raise PublisherConfigurationMissing
+            messagebus = Publisher(**config)
+            if not self.debug.disable_sending_events:
+                messagebus.start()
+                messagebus.wait_start()
+            self.config.set("messagebus", messagebus)
+        return messagebus
 
     def start_publisher(self):
         """Start the RabbitMQ publisher using config data from ETOS library config service."""
