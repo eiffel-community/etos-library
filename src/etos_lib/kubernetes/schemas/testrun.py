@@ -138,6 +138,8 @@ class TestRunSpec(BaseModel):
     """TestRunSpec is the specification of a TestRun Kubernetes resource."""
 
     cluster: Optional[str] = None
+    timeout: Optional[int] = None
+    deadline: Optional[int] = None
     artifact: str
     suiteRunner: Optional[Image] = None
     testRunner: Optional[TestRunner] = None
