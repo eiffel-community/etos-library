@@ -21,7 +21,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from .types import File, Log, Result
+from .types import File, Log, Result, ServiceStatus
 
 
 class Event(BaseModel):
@@ -118,6 +118,20 @@ class Artifact(UserEvent):
     def __str__(self) -> str:
         """Return the string representation of a file."""
         return f"[{self.data.name}]({self.data.url})"
+
+
+class Status(UserEvent):
+    """An ETOS status event. Published to show current status of a service."""
+
+    event: str = "Status"
+    data: ServiceStatus
+    meta: str = Field(default_factory=lambda data: data["data"].name)
+
+    def __str__(self) -> str:
+        """Return the string representation of a status."""
+        if self.data.message is not None:
+            return f"{self.data.name}[{self.data.status}]: {self.data.message}"
+        return f"{self.data.name}[{self.data.status}]"
 
 
 def parse(event: dict) -> Event:

@@ -16,9 +16,17 @@
 """Types used by events but are not events themselves."""
 
 from datetime import datetime
+from enum import Enum
 from typing import Annotated
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, StringConstraints
+
+
+class ServiceHealth(Enum):
+    """Health of a service."""
+
+    OK = "ok"
+    ERROR = "error"
 
 
 class File(BaseModel):
@@ -57,3 +65,12 @@ class Result(BaseModel):
     conclusion: str
     verdict: str
     description: str = ""
+
+
+class ServiceStatus(BaseModel):
+    """Service status."""
+
+    name: str
+    version: str
+    status: ServiceHealth
+    message: str | None = None
