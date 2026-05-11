@@ -22,8 +22,8 @@ from typing import Annotated
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, StringConstraints
 
 
-class Status(Enum):
-    """Status of a service."""
+class ServiceHealth(Enum):
+    """Health of a service."""
 
     OK = "ok"
     ERROR = "error"
@@ -72,5 +72,5 @@ class ServiceStatus(BaseModel):
 
     name: str
     version: str
-    status: Status
+    status: ServiceHealth
     message: str | None = None

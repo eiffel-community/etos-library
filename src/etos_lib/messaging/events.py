@@ -127,6 +127,12 @@ class Status(UserEvent):
     data: ServiceStatus
     meta: str = Field(default_factory=lambda data: data["data"].name)
 
+    def __str__(self) -> str:
+        """Return the string representation of a status."""
+        if self.data.message is not None:
+            return f"{self.data.name}[{self.data.status}]: {self.data.message}"
+        return f"{self.data.name}[{self.data.status}]"
+
 
 def parse(event: dict) -> Event:
     """Parse an event dict and return a corresponding Event class."""
