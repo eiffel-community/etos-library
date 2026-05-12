@@ -153,7 +153,7 @@ def setup_rabbitmq_logging(log_filter: EtosFilter) -> None:
 
     # Backwards compatibility
     rabbitmq = RabbitMQLogPublisher(**Config().etos_rabbitmq_publisher_data(), routing_key=None)
-    if Debug().enable_sending_logs:
+    if Debug().enable_sending_logs and not Debug().disable_ssev1:
         rabbitmq.start()
         atexit.register(close_rabbit, rabbitmq)
 
