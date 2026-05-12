@@ -23,7 +23,7 @@ from collections import deque
 from pathlib import Path
 
 
-class Debug:
+class Debug:  # pylint: disable=too-many-public-methods
     """Debug flags for ETOS."""
 
     __events_published = deque(maxlen=int(os.getenv("ETOS_PUBLISHED_EVENT_HISTORY_SIZE", "100")))
