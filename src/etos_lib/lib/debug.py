@@ -19,11 +19,11 @@ DEPRECATION WARNING: Some parameters which don't belong here will be removed.
 """
 
 import os
-from pathlib import Path
 from collections import deque
+from pathlib import Path
 
 
-class Debug:
+class Debug:  # pylint: disable=too-many-public-methods
     """Debug flags for ETOS."""
 
     __events_published = deque(maxlen=int(os.getenv("ETOS_PUBLISHED_EVENT_HISTORY_SIZE", "100")))
@@ -48,6 +48,11 @@ class Debug:
     def disable_sending_events(self):
         """Disable sending eiffel events."""
         return bool(os.getenv("ETOS_DISABLE_SENDING_EVENTS", None))
+
+    @property
+    def disable_ssev1(self) -> bool:
+        """Disable SSEv1 publisher."""
+        return bool(os.getenv("ETOS_DISABLE_SSEV1", None))
 
     @property
     def enable_sending_logs(self):
