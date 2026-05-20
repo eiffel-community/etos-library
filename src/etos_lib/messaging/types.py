@@ -71,6 +71,7 @@ class ServiceStatus(BaseModel):
     """Service status."""
 
     name: str
+    instance: str
     version: str
     status: ServiceHealth
     message: str | None = None
