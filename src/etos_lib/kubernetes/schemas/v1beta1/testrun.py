@@ -19,7 +19,11 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from .common import Image, Metadata
+from etos_lib.schemas.v0.environment import Constraint as V0Constraint
+from etos_lib.schemas.v0.environment import Recipe as V0Recipe
+from etos_lib.schemas.v0.environment import TestCase as V0TestCase
+
+from ..common import Image, Metadata
 
 __all__ = ["TestRun", "TestRunSpec", "TestRunStatus"]
 
@@ -28,7 +32,7 @@ class TestCase(BaseModel):
     """TestCase describes a test case to run."""
 
     id: str
-    tracker: Optional[str] = None
+    repository: Optional[str] = None
     uri: Optional[str] = None
     version: Optional[str] = None
 
@@ -64,6 +68,68 @@ class TestExecution(BaseModel):
     execution: Execution
     environment: TestEnvironment
     dependencies: list[str] = []
+
+    @classmethod
+    def convert_from(cls, src: V0Recipe) -> "TestExecution":
+        """Convert a v0 Recipe to a TestExecution."""
+        execution = {}
+        for constraint in src.constraints:
+            if constraint.key == "ENVIRONMENT":
+                execution["environment"] = constraint.value
+            elif constraint.key == "PARAMETERS":
+                execution["parameters"] = constraint.value
+            elif constraint.key == "COMMAND":
+                execution["command"] = constraint.value
+            elif constraint.key == "EXECUTE":
+                execution["execute"] = constraint.value
+            elif constraint.key == "CHECKOUT":
+                execution["checkout"] = constraint.value
+            elif constraint.key == "TEST_RUNNER":
+                execution["testRunner"] = constraint.value
+        command = execution.get("command", "")
+        for key, value in execution.get("parameters", {}).items():
+            if value == "":
+                command = f"{command} {key}"
+            else:
+                command = f"{command} {key}={value}"
+        return cls(
+            id=src.id,
+            environment=TestEnvironment(
+                testRunner=execution.get("testRunner", ""),
+                environmentVariables=execution.get("environment", {}),
+            ),
+            testCase=TestCase(
+                id=src.testCase.id,
+                repository=src.testCase.tracker,
+                uri=src.testCase.url,
+            ),
+            execution=Execution(
+                command=command,
+                checkout=execution.get("checkout", []),
+                preExecution=execution.get("execute", []),
+            ),
+        )
+
+    def convert_to(self) -> V0Recipe:
+        """Convert a TestExecution to a v0 Recipe."""
+        constraints: list[V0Constraint] = [
+            V0Constraint(key="COMMAND", value=self.execution.command),
+            V0Constraint(key="EXECUTE", value=self.execution.preExecution),
+            V0Constraint(key="CHECKOUT", value=self.execution.checkout),
+            V0Constraint(key="TEST_RUNNER", value=self.environment.testRunner),
+            V0Constraint(key="ENVIRONMENT", value=self.environment.environmentVariables),
+            # v1beta1 sets parameters directly on command, leave empty
+            V0Constraint(key="PARAMETERS", value={}),
+        ]
+        return V0Recipe(
+            id=self.id,
+            testCase=V0TestCase(
+                id=self.testCase.id,
+                tracker=self.testCase.repository,
+                url=self.testCase.uri,
+            ),
+            constraints=constraints,
+        )
 
 
 class Suite(BaseModel):

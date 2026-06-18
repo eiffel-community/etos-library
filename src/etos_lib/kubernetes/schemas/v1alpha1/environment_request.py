@@ -16,8 +16,10 @@
 """Models for the EnvironmentRequest resource."""
 
 from typing import Optional
+
 from pydantic import BaseModel
-from .common import Metadata
+
+from ..common import Metadata
 from .testrun import Test
 
 

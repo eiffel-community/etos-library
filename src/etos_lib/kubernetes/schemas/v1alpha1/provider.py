@@ -16,8 +16,10 @@
 """Models for the Provider resource."""
 
 from typing import Optional, Union
+
 from pydantic import BaseModel
-from .common import Metadata
+
+from ..common import Metadata
 
 
 class JSONTasList(BaseModel):
