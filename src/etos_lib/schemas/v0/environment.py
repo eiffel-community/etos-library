@@ -17,8 +17,7 @@
 
 from typing import Optional, Union
 
-from pydantic import (BaseModel, ValidationError, conlist, constr,
-                      field_validator)
+from pydantic import BaseModel, ValidationError, conlist, constr, field_validator
 from pydantic.fields import PrivateAttr
 
 
