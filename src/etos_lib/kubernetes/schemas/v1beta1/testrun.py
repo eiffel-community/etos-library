@@ -143,8 +143,8 @@ class Suite(BaseModel):
 class Retention(BaseModel):
     """Retention describes how long to keep the TestRun resources."""
 
-    failure: Optional[int] = None
-    success: Optional[int] = None
+    failure: Optional[str] = None
+    success: Optional[str] = None
 
 
 class Providers(BaseModel):
