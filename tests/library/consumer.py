@@ -82,10 +82,22 @@ class SimpleConsumer(threading.Thread):
                 await consumer.delete_stream(self.stream_name, missing_ok=True)
                 await consumer.close()
 
+    async def __retry_consumer(self, retries: int = 5, delay: float = 5.0):
+        """Retry the consumer connection a specified number of times with a delay."""
+        for attempt in range(retries):
+            try:
+                await self.__wrap_consumer()
+                return  # Exit if successful
+            except Exception as e:
+                if attempt < retries - 1:
+                    await asyncio.sleep(delay)  # Wait before retrying
+                else:
+                    raise e  # Raise the exception if all retries fail
+
     def run(self):
         """Run the consumer, consuming messages from the stream until shutdown."""
         try:
-            asyncio.run(self.__wrap_consumer())
+            asyncio.run(self.__retry_consumer())
         finally:
             self.__closed.set()
 
