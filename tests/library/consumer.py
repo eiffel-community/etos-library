@@ -88,7 +88,7 @@ class SimpleConsumer(threading.Thread):
             try:
                 await self.__wrap_consumer()
                 return  # Exit if successful
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-except
                 if attempt < retries - 1:
                     await asyncio.sleep(delay)  # Wait before retrying
                 else:
