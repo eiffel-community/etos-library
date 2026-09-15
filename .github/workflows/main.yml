@@ -35,4 +35,6 @@ jobs:
       - name: Upgrade setuptools
         run: pip install -U setuptools
       - name: Run Tox
+        env:
+          RABBITMQ_HOST: ${{ job.services.rabbitmq-streaming.id }}
         run: tox

@@ -13,12 +13,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""ETOS Kubernetes schemas."""
-
-# Defaulting to v1alpha1 as to not break existing users of the library.
-# The v1beta1 schemas are available under the `v1beta1` submodule.
-from .common import Metadata
-from .v1alpha1.environment import *
-from .v1alpha1.environment_request import *
-from .v1alpha1.provider import *
-from .v1alpha1.testrun import *
+"""ETOS schemas."""
