@@ -16,11 +16,9 @@
 """Models for the Environment resource."""
 
 from typing import Optional
-
 from pydantic import BaseModel
-
-from ..common import Metadata
-from .testrun import Suite, Test
+from .common import Metadata
+from .testrun import Test, Suite
 
 
 class EnvironmentSpec(BaseModel):

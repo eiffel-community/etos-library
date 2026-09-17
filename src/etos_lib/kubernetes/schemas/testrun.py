@@ -15,11 +15,9 @@
 # limitations under the License.
 """Models for the TestRun resource."""
 
-from typing import Any, List, Optional, Union
-
+from typing import Optional, List, Any, Union
 from pydantic import BaseModel
-
-from ..common import Image, Metadata, Retention
+from .common import Metadata, Image, Retention
 
 __all__ = ["TestRun", "TestRunSpec"]
 
