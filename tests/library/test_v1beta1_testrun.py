@@ -48,3 +48,20 @@ def test_suite_dataset_accepts_missing_null_and_object():
     assert Suite(testExecutions=[]).dataset is None
     assert Suite(testExecutions=[], dataset=None).dataset is None
     assert Suite(testExecutions=[], dataset={"key": "value"}).dataset == {"key": "value"}
+
+
+def test_status_round_trips_conditions_and_environment_requests():
+    """Test that v1beta1 status preserves Kubernetes status details."""
+    status = TestRunStatus(
+        completionTime="2026-09-18T10:00:00Z",
+        verdict="Passed",
+        conditions=[{"type": "Ready", "status": "True"}],
+        environmentRequests=[{"name": "test-environment-request"}],
+    )
+
+    assert status.model_dump() == {
+        "completionTime": "2026-09-18T10:00:00Z",
+        "verdict": "Passed",
+        "conditions": [{"type": "Ready", "status": "True"}],
+        "environmentRequests": [{"name": "test-environment-request"}],
+    }

@@ -186,6 +186,8 @@ class TestRunStatus(BaseModel):
 
     completionTime: Optional[str] = None
     verdict: Optional[str] = None
+    conditions: list[dict] = []
+    environmentRequests: list[dict] = []
 
 
 class TestRun(BaseModel):
