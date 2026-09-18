@@ -87,7 +87,7 @@ class TestExecution(BaseModel):
             elif constraint.key == "TEST_RUNNER":
                 execution["testRunner"] = constraint.value
         command = execution.get("command", "")
-        for key, value in execution.get("parameters", {}).items():
+        for key, value in sorted(execution.get("parameters", {}).items()):
             if value == "":
                 command = f"{command} {key}"
             else:
