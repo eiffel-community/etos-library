@@ -41,3 +41,10 @@ def test_convert_from_sorts_parameters():
     converted = TestExecution.convert_from(recipe)
 
     assert converted.execution.command == "run-test alpha beta=middle zeta=last"
+
+
+def test_suite_dataset_accepts_missing_null_and_object():
+    """Test that optional v1beta1 datasets are not replaced with an empty object."""
+    assert Suite(testExecutions=[]).dataset is None
+    assert Suite(testExecutions=[], dataset=None).dataset is None
+    assert Suite(testExecutions=[], dataset={"key": "value"}).dataset == {"key": "value"}

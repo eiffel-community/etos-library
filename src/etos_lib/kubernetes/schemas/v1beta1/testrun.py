@@ -137,7 +137,7 @@ class Suite(BaseModel):
 
     testExecutions: list[TestExecution]
     priority: int = 1
-    dataset: dict = {}
+    dataset: Optional[dict] = None
 
 
 class Retention(BaseModel):
