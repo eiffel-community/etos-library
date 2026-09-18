@@ -18,8 +18,9 @@
 import json
 import unittest
 
-from etos_lib.messaging.events import Message, parse
-from etos_lib.messaging.types import Log
+from etos_lib.messaging.events import Message, Status, parse
+from etos_lib.messaging.publisher import serialize_event
+from etos_lib.messaging.types import Log, ServiceHealth, ServiceStatus
 
 
 class TestMessageSerialization(unittest.TestCase):
@@ -55,6 +56,23 @@ class TestMessageSerialization(unittest.TestCase):
         data = event.model_dump()["data"]
         self.assertIn("@timestamp", data)
         self.assertNotIn("datestring", data)
+
+    def test_publisher_omits_unset_event_id(self):
+        """Test that publisher serialization does not encode an unset event ID as null."""
+        event = Status(
+            data=ServiceStatus(
+                name="test-runner",
+                instance="test-runner-0",
+                version="1.0.0",
+                status=ServiceHealth.OK,
+            )
+        )
+
+        serialized = json.loads(serialize_event(event))
+
+        self.assertNotIn("id", serialized)
+        self.assertEqual(serialized["event"], "status")
+        self.assertEqual(serialized["meta"], "test-runner")
 
 
 if __name__ == "__main__":

@@ -30,6 +30,11 @@ from .events import Event
 # pylint: disable=too-many-instance-attributes
 
 
+def serialize_event(event: Event) -> bytes:
+    """Serialize an event for publishing without optional fields that are not set."""
+    return event.model_dump_json(exclude_none=True).encode("utf-8")
+
+
 class Publisher(threading.Thread):
     """Publisher that runs in a separate thread and publishes messages to RabbitMQ."""
 
@@ -186,7 +191,7 @@ class Publisher(threading.Thread):
         if self.__loop is None:
             raise RuntimeError("Publisher loop is not running")
         amqp_message = AMQPMessage(
-            body=bytes(event.model_dump_json(), encoding="utf-8"),
+            body=serialize_event(event),
             application_properties={
                 "identifier": testrun_id,
                 "type": event.event.lower(),
