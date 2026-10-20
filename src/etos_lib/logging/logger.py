@@ -32,11 +32,15 @@ Example::
 import atexit
 import logging
 import logging.config
+import os
 import sys
 import threading
 from pathlib import Path
 
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.exporter.otlp.proto.http._log_exporter import (
+    OTLPLogExporter as HttpOTLPLogExporter,
+)
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
@@ -191,7 +195,17 @@ def setup_otel_logging(
     """
     logger_provider = LoggerProvider(resource)
     logger_provider.add_log_record_processor(ToStringProcessor())
-    logger_provider.add_log_record_processor(BatchLogRecordProcessor(OTLPLogExporter()))
+    protocol = os.getenv(
+        "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL",
+        os.getenv("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc"),
+    )
+    if protocol == "grpc":
+        exporter = OTLPLogExporter()
+    elif protocol == "http/protobuf":
+        exporter = HttpOTLPLogExporter()
+    else:
+        raise ValueError(f"Unsupported OTLP logs protocol: {protocol}")
+    logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
     otel_log_handler = LoggingHandler(logger_provider=logger_provider)
 
     otel_log_handler.setFormatter(EtosLogFormatter())
