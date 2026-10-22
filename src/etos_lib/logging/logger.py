@@ -42,7 +42,8 @@ from opentelemetry.exporter.otlp.proto.http._log_exporter import (
     OTLPLogExporter as HttpOTLPLogExporter,
 )
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.instrumentation.logging.handler import LoggingHandler
+from opentelemetry.sdk._logs import LoggerProvider
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.resources import Resource
 from yaml import SafeLoader, load
@@ -214,7 +215,10 @@ def setup_otel_logging(
 
     logging.getLogger().addHandler(otel_log_handler)
 
-    LoggingInstrumentor().instrument(set_logging_format=False)
+    LoggingInstrumentor().instrument(
+        set_logging_format=False,
+        enable_log_auto_instrumentation=False,
+    )
 
 
 def setup_logging(
